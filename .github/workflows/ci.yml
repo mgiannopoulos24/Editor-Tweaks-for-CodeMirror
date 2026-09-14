@@ -44,13 +44,3 @@ jobs:
       - name: Start WordPress (wp-env)
         run: bun run start
       - run: bun run test:e2e
-      - name: Upload Playwright report
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: tests/e2e-pw/playwright-report
-          retention-days: 7
-      - name: Show WordPress debug.log
-        if: failure()
-        run: bun run wp-env run cli sh -c 'cat wp-content/debug.log 2>/dev/null || echo "no debug.log"'
