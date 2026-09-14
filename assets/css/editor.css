@@ -1,7 +1,7 @@
 /**
- * Editor styles for CodeMirror Forge
+ * Editor styles for Editor Tweaks for CodeMirror
  *
- * @package CM_Forge
+ * @package Editor_Tweaks_For_CodeMirror
  */
  
 /* Custom font size adjustments */
@@ -48,7 +48,7 @@
     position: relative;
 }
 
-.cm-forge-ruler {
+.editor-tweaks-for-codemirror-ruler {
     position: absolute;
     top: 0;
     bottom: 0;

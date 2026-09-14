@@ -5,69 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.3] - 2026-04-19
-
-### Changed
-- Full codebase refactoring to follow WordPress PHP coding standards
-- Added proper PHPDoc comments for all classes and methods
-- Added phpcs.xml configuration for code style checking
-
-### Security
-- Added explicit nonce verification for form submissions
-
-## [1.3.2] - 2026-04-19
-
-### Security
-- Added explicit nonce verification for form submissions
-
-## [1.3.1] - 2026-04-19
+## [1.0.0] - 2026-09-14
 
 ### Added
-- uninstall.php file for proper cleanup when plugin is uninstalled
-
-### Security
-- Added validation for font weight to only allow values 100-900 (prevents arbitrary input)
-
-## [1.3.0] - 2026-01-10
-
-### Added
-- Current line highlighting option to highlight the line where the cursor is located
-- Enhanced CSS styling for current line highlighting with theme-aware colors (light/dark theme support)
-- Help icon tooltips for all settings fields (replaces inline description text)
-- Improved translation loading with locale fallback support (el → el_GR)
-- Updated development dependencies
-
-### Changed
-- Replaced inline description text with compact help icon tooltips for cleaner UI
-- Improved translation loading logic to handle base locale detection (e.g., el instead of el_GR)
-
-## [1.2.0] - 2026-01-10
-
-### Added
-- Full internationalization (i18n) support with WordPress translation system
-- Greek (el_GR) translation with complete localization of all plugin strings
-- Translation workflow scripts (`npm run i18n:lang`) for managing translations
-- Automatic locale detection with fallback support (el_GR → el)
-- Translation files structure (POT, PO, MO) in `languages/` directory
-- Enhanced text domain loading with improved locale handling
-
-### Changed
-- Improved text domain loading mechanism for better translation support
-- Updated plugin structure to support multiple languages
-
-## [1.1.0] - 2026-01-10
-
-### Added
-- Letter spacing customization option (supports negative and positive values in pixels)
-- Enhanced gutter spacing for better readability of line numbers
-
-### Fixed
-- Improved spacing between line numbers and code content in the editor gutter
-
-## [1.0.0] - 2026-01-05
-
-### Added
-- Initial release of CM Forge
+- Initial release of Editor Tweaks for CodeMirror
 - 40+ CodeMirror 5 themes support
 - Font customization:
   - Font family selection via Fontsource API
@@ -84,10 +25,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Universal application to all CodeMirror editors in WordPress
 - Dynamic theme loading from CDN
 
-[1.3.3]: https://github.com/mgiannopoulos24/codemirror-forge/compare/v1.3.2...v1.3.3
-[1.3.2]: https://github.com/mgiannopoulos24/codemirror-forge/compare/v1.3.1...v1.3.2
-[1.3.1]: https://github.com/mgiannopoulos24/codemirror-forge/compare/v1.3.0...v1.3.1
-[1.3.0]: https://github.com/mgiannopoulos24/codemirror-forge/compare/v1.2.0...v1.3.0
-[1.2.0]: https://github.com/mgiannopoulos24/codemirror-forge/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/mgiannopoulos24/codemirror-forge/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/mgiannopoulos24/codemirror-forge/releases/tag/v1.0.0
+[1.0.0]: https://github.com/mgiannopoulos24/editor-tweaks-for-codemirror/releases/tag/v1.0.0

@@ -1,6 +1,6 @@
 # Agent Development Guide
 
-This document outlines development guidelines for agents working on CodeMirror Forge.
+This document outlines development guidelines for agents working on Editor Tweaks for CodeMirror.
 
 ## Project Overview
 
@@ -8,9 +8,9 @@ A WordPress plugin that customizes CodeMirror editor instances with themes, font
 
 ## Key Files
 
-- `codemirror-forge.php` - Main plugin file
-- `includes/class-cm-forge-admin.php` - Admin settings and UI
-- `includes/class-cm-forge-editor.php` - Editor asset enqueuing
+- `editor-tweaks-for-codemirror.php` - Main plugin file
+- `includes/class-editor-tweaks-for-codemirror-admin.php` - Admin settings and UI
+- `includes/class-editor-tweaks-for-codemirror-editor.php` - Editor asset enqueuing
 - `assets/js/editor.js` - Editor customization logic
 - `assets/js/admin.js` - Admin preview logic
 - `assets/css/editor.css` - Editor styling
@@ -19,12 +19,12 @@ A WordPress plugin that customizes CodeMirror editor instances with themes, font
 
 When adding new editor settings:
 
-1. **Admin settings** (`class-cm-forge-admin.php`):
+1. **Admin settings** (`class-editor-tweaks-for-codemirror-admin.php`):
    - Register in `register_settings()`
    - Add sanitization in `sanitize_settings()`
    - Add render method
 
-2. **Settings passing** (`class-cm-forge-editor.php`):
+2. **Settings passing** (`class-editor-tweaks-for-codemirror-editor.php`):
    - Add to `wp_localize_script` array
 
 3. **Editor application** (`editor.js`):
@@ -54,13 +54,13 @@ After any code change:
 ## Version Updates
 
 After CHANGELOG update, update version in:
-1. `codemirror-forge.php` (header and constant)
+1. `editor-tweaks-for-codemirror.php` (header and constant)
 2. `package.json`
 
 ## Translation Updates
 
 After adding new translatable strings:
-- Run: `bun run i18n:lang <locale> all`
+- Run: `bun run i18n`
 - Requires wp-env running (`bun run start`)
 - Never manually edit .pot/.po/.mo files
 
@@ -68,7 +68,7 @@ After adding new translatable strings:
 
 - PHP: WordPress coding standards, proper sanitization
 - JavaScript: Vanilla JS, `'use strict'`, check undefined
-- CSS: Use `cm-forge-` prefix, avoid `!important`
+- CSS: Use `editor-tweaks-for-codemirror-` prefix, avoid `!important`
 
 ## Available Scripts
 
@@ -77,5 +77,5 @@ bun run start     # Start dev environment
 bun run stop      # Stop dev environment
 bun run bundle    # Create distribution zip
 bun run lint      # PHP syntax check
-bun run i18n:lang <locale> all  # Update translations
+bun run i18n       # Regen POT, update POs, compile MOs
 ```

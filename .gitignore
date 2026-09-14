@@ -1,9 +1,11 @@
-# Wordpress - ignore core, configuration, examples, uploads and logs.
-# https://github.com/github/gitignore/blob/main/WordPress.gitignore
+# Build files
+build/
 
 # Dependencies
 node_modules/
+vendor/
 
-# Build
-*.zip
-/vendor/
+# Tests
+tests/**/test-results
+tests/**/playwright-report
+tests/**/.auth

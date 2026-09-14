@@ -1,7 +1,7 @@
 /**
- * CodeMirror Forge Editor Script
+ * Editor Tweaks for CodeMirror Editor Script
  *
- * @package CM_Forge
+ * @package Editor_Tweaks_For_CodeMirror
  */
 
 (function() {
@@ -16,7 +16,7 @@
 
     function init() {
         // Check if settings are available
-        if (typeof cmForgeSettings === 'undefined') {
+        if (typeof editorTweaksForCodeMirrorSettings === 'undefined') {
             return;
         }
 
@@ -28,7 +28,7 @@
     }
 
     function applyCustomizations() {
-        const settings = cmForgeSettings;
+        const settings = editorTweaksForCodeMirrorSettings;
 
         // Find all CodeMirror editors
         const editors = document.querySelectorAll('.CodeMirror, .CodeMirror-wrap');
@@ -77,7 +77,7 @@
 
         const cmThemeName = themeMap[themeName] || themeName;
         const themeFileName = cmThemeName.replace(/\s+/g, '-');
-        const styleId = 'cm-forge-theme-' + themeFileName;
+        const styleId = 'editor-tweaks-for-codemirror-theme-' + themeFileName;
 
         // Check if already loaded
         if (document.getElementById(styleId)) {
@@ -171,7 +171,7 @@
                     // Don't add CSS classes - CodeMirror handles everything
                 } else if (customThemes.includes(settings.theme)) {
                     // Custom theme - use our CSS classes
-                    editorElement.classList.add('cm-theme-' + settings.theme);
+                    editorElement.classList.add('etcm-theme-' + settings.theme);
                 }
             } catch (e) {
                 // Theme not available, continue with default
@@ -241,10 +241,10 @@
         if (settings.rulerColumn && settings.rulerColumn > 0) {
             try {
                 // Create or update ruler element
-                let ruler = editorElement.querySelector('.cm-forge-ruler');
+                let ruler = editorElement.querySelector('.editor-tweaks-for-codemirror-ruler');
                 if (!ruler) {
                     ruler = document.createElement('div');
-                    ruler.className = 'cm-forge-ruler';
+                    ruler.className = 'editor-tweaks-for-codemirror-ruler';
                     ruler.style.cssText = 'position: absolute; top: 0; bottom: 0; width: 1px; ' +
                         'background: rgba(128, 128, 128, 0.3); pointer-events: none; z-index: 10;';
                     const linesElement = editorElement.querySelector('.CodeMirror-lines');
@@ -265,7 +265,7 @@
             }
         } else {
             // Remove ruler if disabled
-            const ruler = editorElement.querySelector('.cm-forge-ruler');
+            const ruler = editorElement.querySelector('.editor-tweaks-for-codemirror-ruler');
             if (ruler) {
                 ruler.remove();
             }
@@ -296,8 +296,8 @@
 
                         cmElements.forEach(function(editorElement) {
                             const cm = editorElement.CodeMirror || editorElement.cm;
-                            if (cm && typeof cmForgeSettings !== 'undefined') {
-                                customizeEditor(cm, cmForgeSettings);
+                            if (cm && typeof editorTweaksForCodeMirrorSettings !== 'undefined') {
+                                customizeEditor(cm, editorTweaksForCodeMirrorSettings);
                             }
                         });
                     }
@@ -317,8 +317,8 @@
         wp.codeEditor.initialize = function(textarea, settings) {
             const result = originalInitialize.call(this, textarea, settings);
             
-            if (result && result.codemirror && typeof cmForgeSettings !== 'undefined') {
-                customizeEditor(result.codemirror, cmForgeSettings);
+            if (result && result.codemirror && typeof editorTweaksForCodeMirrorSettings !== 'undefined') {
+                customizeEditor(result.codemirror, editorTweaksForCodeMirrorSettings);
             }
             
             return result;

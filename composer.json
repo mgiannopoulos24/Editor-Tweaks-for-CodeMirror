@@ -1,19 +1,19 @@
 {
-    "name": "mgiannopoulos24/cm-forge",
-    "description": "Forge your perfect CodeMirror editor experience. Customize themes, fonts, and display options for all CodeMirror instances in WordPress.",
+    "name": "mgiannopoulos24/editor-tweaks-for-codemirror",
+    "description": "Tweak every CodeMirror editor in WordPress with custom themes, fonts, and display options.",
     "type": "wordpress-plugin",
-    "require": {
-        "wp-coding-standards/wpcs": "^3.0"
-    },
-    "require-dev": {
-        "squizlabs/php_codesniffer": "^3.7"
-    },
-    "license": "GPL-3",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
-            "name": "mgiannopoulos24"
+            "name": "Marios Giannopoulos",
+            "email": "mariosgian_2002@yahoo.gr",
+            "homepage": "https://github.com/mgiannopoulos24"
         }
     ],
+    "require-dev": {
+        "wp-coding-standards/wpcs": "^3.0",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
     "minimum-stability": "stable",
     "config": {
         "allow-plugins": {

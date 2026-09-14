@@ -1,7 +1,7 @@
 /**
- * CodeMirror Forge Admin Script
+ * Editor Tweaks for CodeMirror Admin Script
  *
- * @package CM_Forge
+ * @package Editor_Tweaks_For_CodeMirror
  */
 
 (function() {
@@ -16,13 +16,25 @@
         init();
     }
 
+    // Available weights per font family, from the Fontsource API.
+    const fontWeights = {};
+
+    // Translated weight labels, captured from the rendered select.
+    const fontWeightLabels = {};
+
     function init() {
-        const fontFamilySelect = document.getElementById('cm_font_family');
-        const fontWeightSelect = document.getElementById('cm_font_weight');
-        const themeSelect = document.getElementById('cm_theme');
+        const fontFamilySelect = document.getElementById('etcm_font_family');
+        const fontWeightSelect = document.getElementById('etcm_font_weight');
+        const themeSelect = document.getElementById('etcm_theme');
         
         if (!fontFamilySelect) {
             return;
+        }
+
+        if (fontWeightSelect) {
+            Array.from(fontWeightSelect.options).forEach(function(option) {
+                fontWeightLabels[option.value] = option.textContent.trim();
+            });
         }
 
         // Initialize CodeMirror preview
@@ -31,10 +43,11 @@
         // Initialize Select2 on theme dropdown
         if (themeSelect && typeof jQuery !== 'undefined' && jQuery.fn.select2) {
             jQuery(themeSelect).select2({
-                placeholder: 'Select a theme...',
+                placeholder: editorTweaksForCodeMirrorAdminSettings.i18n.selectTheme,
                 allowClear: false,
                 width: '200px',
                 minimumInputLength: 0,
+                language: editorTweaksForCodeMirrorAdminSettings.select2Language,
             });
 
             // Load theme CSS when selection changes and update preview immediately
@@ -58,7 +71,7 @@
         }
 
         // Setup file type selector for preview
-        const fileTypeSelect = document.getElementById('cm-forge-preview-file-type');
+        const fileTypeSelect = document.getElementById('editor-tweaks-for-codemirror-preview-file-type');
         if (fileTypeSelect) {
             fileTypeSelect.addEventListener('change', function() {
                 loadPreviewFile(this.value);
@@ -68,24 +81,25 @@
         // Initialize Select2 on font family select
         if (typeof jQuery !== 'undefined' && jQuery.fn.select2) {
             jQuery(fontFamilySelect).select2({
-                placeholder: 'Search and select a font...',
+                placeholder: editorTweaksForCodeMirrorAdminSettings.i18n.searchFont,
                 allowClear: true,
                 width: '200px',
                 minimumInputLength: 0,
-                language: {
-                    noResults: function() {
-                        return 'No fonts found';
+                // First match wins; the locale file supplies the rest.
+                language: [
+                    {
+                        noResults: function() {
+                            return editorTweaksForCodeMirrorAdminSettings.i18n.noFontsFound;
+                        }
                     },
-                    searching: function() {
-                        return 'Searching...';
-                    }
-                }
+                    editorTweaksForCodeMirrorAdminSettings.select2Language
+                ]
             });
 
             // Load font preview when selection changes
             jQuery(fontFamilySelect).on('select2:select select2:clear', function() {
                 const selectedFont = this.value;
-                const selectedWeight = fontWeightSelect ? fontWeightSelect.value : '400';
+                const selectedWeight = updateFontWeightOptions(selectedFont);
                 if (selectedFont) {
                     loadFontPreview(selectedFont, selectedWeight);
                 }
@@ -94,7 +108,7 @@
             // Fallback if Select2 is not loaded
             fontFamilySelect.addEventListener('change', function() {
                 const selectedFont = this.value;
-                const selectedWeight = fontWeightSelect ? fontWeightSelect.value : '400';
+                const selectedWeight = updateFontWeightOptions(selectedFont);
                 if (selectedFont) {
                     loadFontPreview(selectedFont, selectedWeight);
                 }
@@ -126,28 +140,25 @@
             loadFontPreview(selectedFont, selectedWeight);
         }
 
-        // Initialize help icon tooltips
-        initHelpIcons();
-
         // Update preview editor when any setting changes
         const settingsInputs = [
             fontFamilySelect,
             fontWeightSelect,
-            document.getElementById('cm_font_size'),
-            document.getElementById('cm_line_height'),
-            document.getElementById('cm_letter_spacing'),
-            document.getElementById('cm_theme'),
-            document.getElementById('cm_line_numbers'),
-            document.getElementById('cm_word_wrap'),
-            document.getElementById('cm_ruler_column'),
-            document.getElementById('cm_current_line_highlight')
+            document.getElementById('etcm_font_size'),
+            document.getElementById('etcm_line_height'),
+            document.getElementById('etcm_letter_spacing'),
+            document.getElementById('etcm_theme'),
+            document.getElementById('etcm_line_numbers'),
+            document.getElementById('etcm_word_wrap'),
+            document.getElementById('etcm_ruler_column'),
+            document.getElementById('etcm_current_line_highlight')
         ];
 
         settingsInputs.forEach(function(input) {
             if (input) {
                 input.addEventListener('change', updatePreviewEditor);
                 // Add input event for number inputs and text inputs (like line height)
-                if (input.type === 'number' || input.id === 'cm_line_height') {
+                if (input.type === 'number' || input.id === 'etcm_line_height') {
                     input.addEventListener('input', updatePreviewEditor);
                 }
             }
@@ -155,7 +166,7 @@
     }
 
     function initPreviewEditor() {
-        const previewTextarea = document.getElementById('cm-forge-preview-editor');
+        const previewTextarea = document.getElementById('editor-tweaks-for-codemirror-preview-editor');
         if (!previewTextarea) {
             return;
         }
@@ -187,6 +198,10 @@
                 setTimeout(function() {
                     updatePreviewEditor();
                 }, 100);
+
+                window.addEventListener('resize', function() {
+                    previewEditor.refresh();
+                });
             }
         } catch (e) {
             // Silently fail if preview editor cannot be initialized
@@ -212,10 +227,10 @@
 
         // Get content from localized script or use default
         let content = '';
-        if (typeof cmForgeAdminSettings !== 'undefined' && 
-            cmForgeAdminSettings.sampleFiles && 
-            cmForgeAdminSettings.sampleFiles[fileInfo.ext]) {
-            content = cmForgeAdminSettings.sampleFiles[fileInfo.ext];
+        if (typeof editorTweaksForCodeMirrorAdminSettings !== 'undefined' && 
+            editorTweaksForCodeMirrorAdminSettings.sampleFiles && 
+            editorTweaksForCodeMirrorAdminSettings.sampleFiles[fileInfo.ext]) {
+            content = editorTweaksForCodeMirrorAdminSettings.sampleFiles[fileInfo.ext];
         } else {
             content = getDefaultContent(fileType);
         }
@@ -313,7 +328,7 @@
         
         // Handle themes with spaces (e.g., 'solarized dark')
         const themeFileName = cmThemeName.replace(/\s+/g, '-');
-        const styleId = 'cm-forge-theme-' + themeFileName;
+        const styleId = 'editor-tweaks-for-codemirror-theme-' + themeFileName;
 
         // Check if CSS is already loaded
         if (document.getElementById(styleId)) {
@@ -360,17 +375,17 @@
         }
 
         // Get current settings
-        const settings = typeof cmForgeAdminSettings !== 'undefined' ? cmForgeAdminSettings : {};
-        const theme = document.getElementById('cm_theme') ? document.getElementById('cm_theme').value : (settings.theme || 'default');
-        const fontFamily = document.getElementById('cm_font_family') ? document.getElementById('cm_font_family').value : (settings.fontFamily || '');
-        const fontWeight = document.getElementById('cm_font_weight') ? document.getElementById('cm_font_weight').value : (settings.fontWeight || '400');
-        const fontSize = document.getElementById('cm_font_size') ? parseInt(document.getElementById('cm_font_size').value) : (settings.fontSize || 14);
-        const lineHeight = document.getElementById('cm_line_height') ? document.getElementById('cm_line_height').value.trim() : (settings.lineHeight || '1.5');
-        const letterSpacing = document.getElementById('cm_letter_spacing') ? parseFloat(document.getElementById('cm_letter_spacing').value) : (settings.letterSpacing !== undefined ? settings.letterSpacing : 0);
-        const lineNumbers = document.getElementById('cm_line_numbers') ? document.getElementById('cm_line_numbers').checked : (settings.lineNumbers !== false);
-        const wordWrap = document.getElementById('cm_word_wrap') ? document.getElementById('cm_word_wrap').checked : (settings.wordWrap || false);
-        const rulerColumn = document.getElementById('cm_ruler_column') ? parseInt(document.getElementById('cm_ruler_column').value) : (settings.rulerColumn || 0);
-        const currentLineHighlight = document.getElementById('cm_current_line_highlight') ? document.getElementById('cm_current_line_highlight').checked : (settings.currentLineHighlight || false);
+        const settings = typeof editorTweaksForCodeMirrorAdminSettings !== 'undefined' ? editorTweaksForCodeMirrorAdminSettings : {};
+        const theme = document.getElementById('etcm_theme') ? document.getElementById('etcm_theme').value : (settings.theme || 'default');
+        const fontFamily = document.getElementById('etcm_font_family') ? document.getElementById('etcm_font_family').value : (settings.fontFamily || '');
+        const fontWeight = document.getElementById('etcm_font_weight') ? document.getElementById('etcm_font_weight').value : (settings.fontWeight || '400');
+        const fontSize = document.getElementById('etcm_font_size') ? parseInt(document.getElementById('etcm_font_size').value) : (settings.fontSize || 14);
+        const lineHeight = document.getElementById('etcm_line_height') ? document.getElementById('etcm_line_height').value.trim() : (settings.lineHeight || '1.5');
+        const letterSpacing = document.getElementById('etcm_letter_spacing') ? parseFloat(document.getElementById('etcm_letter_spacing').value) : (settings.letterSpacing !== undefined ? settings.letterSpacing : 0);
+        const lineNumbers = document.getElementById('etcm_line_numbers') ? document.getElementById('etcm_line_numbers').checked : (settings.lineNumbers !== false);
+        const wordWrap = document.getElementById('etcm_word_wrap') ? document.getElementById('etcm_word_wrap').checked : (settings.wordWrap || false);
+        const rulerColumn = document.getElementById('etcm_ruler_column') ? parseInt(document.getElementById('etcm_ruler_column').value) : (settings.rulerColumn || 0);
+        const currentLineHighlight = document.getElementById('etcm_current_line_highlight') ? document.getElementById('etcm_current_line_highlight').checked : (settings.currentLineHighlight || false);
 
         // Apply theme
         const editorElement = previewEditor.getWrapperElement();
@@ -452,7 +467,7 @@
                 }
             } else if (customThemes.includes(theme)) {
                 // Custom theme - use our CSS classes
-                const themeClass = 'cm-theme-' + theme;
+                const themeClass = 'etcm-theme-' + theme;
                 editorElement.classList.add(themeClass);
                 codeMirrorElement.classList.add(themeClass);
             }
@@ -522,11 +537,11 @@
         previewEditor.setOption('lineWrapping', wordWrap);
 
         // Apply ruler column
-        let ruler = editorElement.querySelector('.cm-forge-ruler');
+        let ruler = editorElement.querySelector('.editor-tweaks-for-codemirror-ruler');
         if (rulerColumn > 0) {
             if (!ruler) {
                 ruler = document.createElement('div');
-                ruler.className = 'cm-forge-ruler';
+                ruler.className = 'editor-tweaks-for-codemirror-ruler';
                 ruler.style.cssText = 'position: absolute; top: 0; bottom: 0; width: 1px; ' +
                     'background: rgba(128, 128, 128, 0.3); pointer-events: none; z-index: 10;';
                 const linesElement = editorElement.querySelector('.CodeMirror-lines');
@@ -577,6 +592,10 @@
                         option.selected = true;
                     }
                     select.appendChild(option);
+
+                    if (Array.isArray(font.weights) && font.weights.length) {
+                        fontWeights[font.family] = font.weights.map(String);
+                    }
                 });
 
                 // If Select2 is initialized, trigger update
@@ -586,8 +605,7 @@
 
                 // If saved value exists, load its preview
                 if (savedValue) {
-                    const fontWeightSelect = document.getElementById('cm_font_weight');
-                    const selectedWeight = fontWeightSelect ? fontWeightSelect.value : '400';
+                    const selectedWeight = updateFontWeightOptions(savedValue);
                     loadFontPreview(savedValue, selectedWeight);
                 }
             })
@@ -597,6 +615,37 @@
                 errorOption.textContent = 'Error loading fonts';
                 select.appendChild(errorOption);
             });
+    }
+
+    // Limit the weight dropdown to the weights the selected font has.
+    // Keeps the current weight if available, else 400, else the first.
+    function updateFontWeightOptions(fontFamily) {
+        const fontWeightSelect = document.getElementById('etcm_font_weight');
+        if (!fontWeightSelect) {
+            return '400';
+        }
+
+        const current = fontWeightSelect.value;
+        const weights = (fontFamily && fontWeights[fontFamily]) || Object.keys(fontWeightLabels);
+
+        while (fontWeightSelect.options.length) {
+            fontWeightSelect.remove(0);
+        }
+
+        weights.forEach(function(weight) {
+            const option = document.createElement('option');
+            option.value = weight;
+            option.textContent = fontWeightLabels[weight] || weight;
+            fontWeightSelect.appendChild(option);
+        });
+
+        let selected = current;
+        if (weights.indexOf(selected) === -1) {
+            selected = weights.indexOf('400') !== -1 ? '400' : weights[0];
+        }
+        fontWeightSelect.value = selected;
+
+        return selected;
     }
 
     function loadFontPreview(fontFamily, fontWeight) {
@@ -610,12 +659,12 @@
         const fontId = fontFamily.toLowerCase().replace(/\s+/g, '-');
 
         // Remove existing font links
-        const existingLinks = document.querySelectorAll('[id^="cm-forge-font-preview"]');
+        const existingLinks = document.querySelectorAll('[id^="editor-tweaks-for-codemirror-font-preview"]');
         existingLinks.forEach(link => link.remove());
 
         // Load base font (index.css includes common weights)
         const baseLink = document.createElement('link');
-        baseLink.id = 'cm-forge-font-preview-base';
+        baseLink.id = 'editor-tweaks-for-codemirror-font-preview-base';
         baseLink.rel = 'stylesheet';
         baseLink.href = 'https://cdn.jsdelivr.net/npm/@fontsource/' + fontId + '/index.css';
         baseLink.onerror = function() {
@@ -627,7 +676,7 @@
         // For other weights, try loading the specific file
         if (fontWeight !== '400' && fontWeight !== '700') {
             const weightLink = document.createElement('link');
-            weightLink.id = 'cm-forge-font-preview-weight';
+            weightLink.id = 'editor-tweaks-for-codemirror-font-preview-weight';
             weightLink.rel = 'stylesheet';
             weightLink.href = 'https://cdn.jsdelivr.net/npm/@fontsource/' + fontId + '/' + fontWeight + '.css';
             weightLink.onerror = function() {
@@ -636,41 +685,10 @@
             document.head.appendChild(weightLink);
         }
 
-        // Apply preview to a preview element if it exists
-        const previewElement = document.querySelector('.cm-forge-preview');
-        if (previewElement) {
-            previewElement.style.fontFamily = '"' + fontFamily + '", monospace';
-            previewElement.style.fontWeight = fontWeight;
-            // Enable font synthesis for weights that might not be available
-            previewElement.style.fontSynthesis = 'weight';
-        }
-
         // Update preview editor if it exists
         if (previewEditor) {
             updatePreviewEditor();
         }
-    }
-
-    function initHelpIcons() {
-        const helpIcons = document.querySelectorAll('.cm-forge-help-icon');
-        
-        helpIcons.forEach(function(icon) {
-            const tooltipText = icon.getAttribute('data-tooltip');
-            if (!tooltipText) {
-                return;
-            }
-
-            // Create tooltip element
-            const tooltip = document.createElement('div');
-            tooltip.className = 'cm-forge-tooltip';
-            tooltip.textContent = tooltipText;
-            icon.appendChild(tooltip);
-
-            // Handle keyboard accessibility
-            icon.setAttribute('tabindex', '0');
-            icon.setAttribute('role', 'button');
-            icon.setAttribute('aria-label', tooltipText);
-        });
     }
 })();
 

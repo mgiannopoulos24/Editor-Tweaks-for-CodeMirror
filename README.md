@@ -1,10 +1,10 @@
-# CodeMirror Forge
+# Editor Tweaks for CodeMirror
 
-A WordPress plugin that expands your CodeMirror editor capabilities. Customize themes, fonts, and display options to forge your perfect editing experience.
+Tweak every CodeMirror editor in WordPress with custom themes, fonts, and display options.
 
 ## Description
 
-CodeMirror Forge provides powerful customization options for WordPress CodeMirror editors, making it easy to personalize your code editing experience. Instead of using default editor settings, you can customize themes, font sizes, line numbers, and word wrapping across all CodeMirror instances in WordPress.
+Editor Tweaks for CodeMirror provides powerful customization options for WordPress CodeMirror editors, making it easy to personalize your code editing experience. Instead of using default editor settings, you can customize themes, font sizes, line numbers, and word wrapping across all CodeMirror instances in WordPress.
 
 ## Features
 
@@ -21,7 +21,7 @@ CodeMirror Forge provides powerful customization options for WordPress CodeMirro
   - Enable/disable word wrap
   - Set ruler column for line length guidelines
   - Highlight current line with subtle background color
-- **Internationalization (i18n)**: Full translation support with Greek (el_GR) included and ready for additional languages
+- **Internationalization (i18n)**: Translation-ready with WordPress.org language packs and Loco Translate support (translations load from `wp-content/languages/plugins` with bundled fallback)
 - **Live Preview**: Real-time preview editor that updates instantly as you change settings
 - **Sample Code Preview**: Test your settings with sample JavaScript, PHP, CSS, HTML, and JSON files
 - **Easy Settings**: Intuitive admin interface with help icon tooltips for all options
@@ -35,9 +35,9 @@ CodeMirror Forge provides powerful customization options for WordPress CodeMirro
 ### WordPress Installation
 
 1. Download the plugin zip file or clone this repository
-2. Upload the `codemirror-forge` folder to the `/wp-content/plugins/` directory
+2. Upload the `editor-tweaks-for-codemirror` folder to the `/wp-content/plugins/` directory
 3. Activate the plugin through the 'Plugins' menu in WordPress
-4. Navigate to **Settings → CodeMirror Forge** to configure your editor preferences
+4. Navigate to **Settings → Editor Tweaks for CodeMirror** to configure your editor preferences
 
 ### Development Setup
 
@@ -52,8 +52,8 @@ This project uses [Bun](https://bun.sh) as the package manager and [@wordpress/e
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/mgiannopoulos24/codemirror-forge.git
-cd codemirror-forge
+git clone https://github.com/mgiannopoulos24/editor-tweaks-for-codemirror.git
+cd editor-tweaks-for-codemirror
 ```
 
 2. **Install dependencies**
@@ -78,18 +78,25 @@ This will start a WordPress instance at `http://localhost:8888`
 
 ### Build Scripts
 
-- `bun run bundle` - Create a distribution zip file (`codemirror-forge.zip`) containing the plugin files
+- `bun run bundle` - Create a distribution zip file (`build/editor-tweaks-for-codemirror.zip`) containing the plugin files
 - `bun run lint` - Run PHP linting on all PHP files in the project
+
+### Test Scripts
+
+- `bun run test:e2e:install` - Download the Chromium build Playwright needs (once)
+- `bun run test:e2e` - Run the Playwright end-to-end tests against the wp-env site (started if not running)
+- `bun run test:e2e:report` - Open the HTML report of the last run
 
 ### Translation Scripts
 
-- `bun run i18n:lang <locale> all` - Generate POT, update PO, and compile MO for a specific language (e.g., `npm run i18n:lang el_GR all`)
-- `bun run i18n:lang <locale> update` - Update PO file from POT template
-- `bun run i18n:lang <locale> make-mo` - Compile MO file from PO file
+- `bun run i18n` - Full flow: generate POT, update all POs, compile MOs (e.g. after adding translatable strings)
+- `bun run i18n:make-pot` - Generate POT template only
+- `bun run i18n:update-po` - Update PO files from POT template
+- `bun run i18n:make-mo` - Compile MO files from PO files
 
 ## Usage
 
-1. Navigate to **Settings → CodeMirror Forge** in your WordPress admin
+1. Navigate to **Settings → Editor Tweaks for CodeMirror** in your WordPress admin
 2. Configure your preferences:
    - **Theme**: Select from 40+ available CodeMirror 5 themes (preview updates instantly)
    - **Font Family**: Search and select from hundreds of available fonts
@@ -114,7 +121,7 @@ This will start a WordPress instance at `http://localhost:8888`
 ## Project Structure
 
 ```
-codemirror-forge/
+editor-tweaks-for-codemirror/
 ├── assets/           # CSS and JavaScript files
 │   ├── css/         # Stylesheets
 │   │   ├── admin.css
@@ -126,26 +133,22 @@ codemirror-forge/
 │       ├── css/
 │       └── js/
 ├── includes/        # PHP class files
-│   ├── class-cm-forge.php
-│   ├── class-cm-forge-admin.php
-│   ├── class-cm-forge-editor.php
-│   └── class-cm-forge-autoloader.php
+│   ├── class-editor-tweaks-for-codemirror.php
+│   ├── class-editor-tweaks-for-codemirror-admin.php
+│   ├── class-editor-tweaks-for-codemirror-editor.php
+│   └── class-editor-tweaks-for-codemirror-autoloader.php
 ├── views/           # Admin view templates
 │   └── admin-settings.php
-├── tests/           # Test files
-│   └── mocks/       # Sample code files for preview
-│       ├── example.js
-│       ├── example.php
-│       ├── example.css
-│       ├── example.html
-│       └── example.json
-├── languages/       # Translation files
-│   ├── codemirror-forge.pot  # Translation template
-│   ├── codemirror-forge-el_GR.po  # Greek translations
-│   └── codemirror-forge-el_GR.mo  # Compiled Greek translations
-├── scripts/        # Utility scripts
-│   └── i18n-lang.sh  # Translation management script
-├── codemirror-forge.php   # Main plugin file
+├── sample-data/    # Sample code files for preview
+│   ├── example.js
+│   ├── example.php
+│   ├── example.css
+│   ├── example.html
+│   └── example.json
+├── languages/       # Translation files (regenerate with `bun run i18n`)
+├── tests/
+│   └── e2e-pw/      # Playwright end-to-end tests
+├── editor-tweaks-for-codemirror.php   # Main plugin file
 ├── package.json     # Dependencies and scripts
 └── .wp-env.json     # WordPress environment configuration
 ```
@@ -178,7 +181,7 @@ Themes are automatically loaded from CDN when selected, so no manual installatio
 ### Extending Settings
 
 Add new settings by:
-1. Registering the field in `register_settings()` method in `class-cm-forge-admin.php`
+1. Registering the field in `register_settings()` method in `class-editor-tweaks-for-codemirror-admin.php`
 2. Adding a render method for the field
 3. Applying the setting in `assets/js/editor.js` and `assets/js/admin.js` for preview
 

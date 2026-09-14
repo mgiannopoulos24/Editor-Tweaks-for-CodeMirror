@@ -1,0 +1,8 @@
+== Changelog ==
+
+= 1.0.0 =
+* Initial release of Editor Tweaks for CodeMirror
+* 40+ CodeMirror 5 themes support
+* Font customization (family, weight, size, line height)
+* Display options (line numbers, word wrap, ruler column)
+* Live preview editor with real-time updates

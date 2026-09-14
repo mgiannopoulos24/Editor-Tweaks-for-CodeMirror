@@ -1,18 +1,18 @@
-=== CM Forge ===
+=== Editor Tweaks for CodeMirror ===
 Contributors: mgiannopoulos24
 Tags: codemirror, editor, theme, customize, font
-Requires at least: 5.0
-Tested up to: 6.9
-Stable tag: 1.3.3
-Requires PHP: 7.4
+Requires at least: 6.5
+Tested up to: 7.1
+Requires PHP: 8.1
+Stable tag: 1.0.0
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Forge your perfect CodeMirror editor experience. Customize themes, fonts, and display options for all CodeMirror instances in WordPress.
+Tweak every CodeMirror editor in WordPress with custom themes, fonts, and display options.
 
 == Description ==
 
-CM Forge provides powerful customization options for WordPress CodeMirror editors, making it easy to personalize your code editing experience. Instead of using default editor settings, you can customize themes, font sizes, line numbers, and word wrapping across all CodeMirror instances in WordPress.
+Editor Tweaks for CodeMirror provides powerful customization options for WordPress CodeMirror editors, making it easy to personalize your code editing experience. Instead of using default editor settings, you can customize themes, font sizes, line numbers, and word wrapping across all CodeMirror instances in WordPress.
 
 = Features =
 
@@ -20,47 +20,22 @@ CM Forge provides powerful customization options for WordPress CodeMirror editor
 * Font Customization - Select from hundreds of fonts, adjust font weight, size, line height, and letter spacing
 * Display Options - Toggle line numbers, word wrap, ruler column, and current line highlighting
 * Live Preview - Real-time preview editor that updates instantly as you change settings
-* Internationalization - Full translation support with Greek (el_GR) included
+* Internationalization - Translation-ready with WordPress.org language packs and Loco Translate support
 
 == Installation ==
 
-1. Upload the `codemirror-forge` folder to the `/wp-content/plugins/` directory
+1. Upload the `editor-tweaks-for-codemirror` folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Navigate to Settings > CodeMirror Forge to configure your preferences
+3. Navigate to Settings > Editor Tweaks for CodeMirror to configure your preferences
 
 == Changelog ==
 
-= 1.3.3 =
-* Full codebase refactoring to follow WordPress PHP coding standards
-* Added proper PHPDoc comments for all classes and methods
-
-= 1.3.2 =
-* Added nonce verification for improved security
-
-= 1.3.1 =
-* Added uninstall.php for proper cleanup when plugin is uninstalled
-* Added validation for font weight to only allow values 100-900
-
-= 1.3.0 =
-* Added font weight customization
-* Added line height with unit support (em, px, etc.)
-* Added enhanced gutter spacing option
-* Added Greek translation (el_GR)
-
-= 1.2.0 =
-* Added letter spacing customization
-* Added ruler column feature
-* Added current line highlighting
-
-= 1.1.0 =
-* Added font size customization
-* Added font family selection via Fontsource API
-
 = 1.0.0 =
-* Initial release
-* Theme customization
-* Line numbers toggle
-* Word wrap toggle
+* Initial release of Editor Tweaks for CodeMirror
+* 40+ CodeMirror 5 themes support
+* Font customization (family, weight, size, line height)
+* Display options (line numbers, word wrap, ruler column)
+* Live preview editor with real-time updates
 
 == Frequently Asked Questions ==
 
@@ -68,7 +43,7 @@ CM Forge provides powerful customization options for WordPress CodeMirror editor
 Yes, it applies to all CodeMirror editor instances in WordPress, including the code block in Gutenberg.
 
 = Where are the settings? =
-Go to Settings > CodeMirror Forge in your WordPress admin.
+Go to Settings > Editor Tweaks for CodeMirror in your WordPress admin.
 
 = How do I get support? =
 For support, please visit the GitHub repository or the WordPress support forums.

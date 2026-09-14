@@ -2,64 +2,35 @@ name: Release
 
 on:
   push:
-    tags:
-      - '*'
-  workflow_dispatch:
-    inputs:
-      tag_name:
-        description: 'Tag to release (e.g. v1.0.0)'
-        required: true
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write
 
 jobs:
-  build-and-release:
-    name: Build and Create Release
+  release:
+    name: Build zip and publish GitHub release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref }}
-      
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      
-      - name: Install dependencies
-        run: bun install
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
 
-      - name: Install Composer dependencies
-        run: composer install --no-dev
-      
-      - name: Run linting
-        run: bun run lint
-      
-      - name: Build bundle
-        run: bun run bundle
-      
-      - name: Extract version from tag
-        id: tag_version
+      - name: Check the tag matches the plugin header
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          echo "version=${TAG_NAME#v}" >> $GITHUB_OUTPUT
-          echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
-          echo "TAG_NAME is: $TAG_NAME"
-          echo "GITHUB_REF is: $GITHUB_REF"
-      
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.tag_version.outputs.tag }}
-          files: codemirror-forge.zip
-          name: CodeMirror-Forge ${{ steps.tag_version.outputs.tag }}
-          body: |
-            ## CodeMirror-Forge ${{ steps.tag_version.outputs.version }}
-            
-            See the [changelog](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
-          draft: false
-          prerelease: false
+          tag="${GITHUB_REF_NAME#v}"
+          ver="$(sed -n 's/^ \* Version: *//p' editor-tweaks-for-codemirror.php | tr -d '\r')"
+          [ "$tag" = "$ver" ] || { echo "::error::Tag v$tag does not match editor-tweaks-for-codemirror.php Version $ver"; exit 1; }
 
+      - run: bun run bundle
+
+      - name: Release notes from changelog.txt (top entry)
+        run: |
+          awk '/^= [0-9]+\.[0-9]+\.[0-9]+ =$/{n++; next} n==1{print} n==2{exit}' changelog.txt > notes.md
+          cat notes.md
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Editor Tweaks for CodeMirror ${{ github.ref_name }}
+          body_path: notes.md
+          files: build/editor-tweaks-for-codemirror.zip

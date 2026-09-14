@@ -1,38 +1,33 @@
 {
-  "name": "codemirror-forge",
-  "version": "1.3.3",
-  "description": "WordPress plugin for customizing CodeMirror editor",
+  "name": "editor-tweaks-for-codemirror",
+  "version": "1.0.0",
+  "description": "Tweak every CodeMirror editor in WordPress with custom themes, fonts, and display options",
   "author": "Marios Giannopoulos",
-  "license": "GPL-3",
+  "license": "GPL-3.0-or-later",
   "keywords": ["wordpress", "plugin", "codemirror", "code-editor", "theme", "fonts", "customize", "editor", "syntax-highlighting"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/mgiannopoulos24/codemirror-forge"
+    "url": "https://github.com/mgiannopoulos24/editor-tweaks-for-codemirror"
   },
   "scripts": {
     "start": "wp-env start",
     "stop": "wp-env stop",
     "destroy": "wp-env destroy",
     "shell": "wp-env run cli /bin/bash",
-    "bundle": "bunx bestzip codemirror-forge.zip codemirror-forge.php includes/ views/ assets/ languages/ uninstall.php readme.txt",
     "lint": "./vendor/bin/phpcs --standard=phpcs.xml --extensions=php .",
     "lint:fix": "./vendor/bin/phpcbf --standard=phpcs.xml --extensions=php .",
-    "i18n:lang": "./scripts/i18n-lang.sh"
-  },
-  "dependencies": {
-    "@codemirror/basic-setup": "^0.20.0",
-    "@codemirror/commands": "^6.10.3",
-    "@codemirror/lang-javascript": "^6.2.5",
-    "@codemirror/lang-php": "^6.0.2",
-    "@codemirror/lang-css": "^6.3.1",
-    "@codemirror/lang-html": "^6.4.11",
-    "@codemirror/theme-one-dark": "^6.1.3",
-    "codemirror": "^6.0.2",
-    "phplint": "^2.0.5",
-    "install": "^0.13.0"
+    "test:e2e:install": "bunx playwright install chromium",
+    "test:e2e": "bunx playwright test --config tests/e2e-pw/playwright.config.ts",
+    "test:e2e:report": "bunx playwright show-report tests/e2e-pw/playwright-report",
+    "i18n:make-pot": "wp-env run cli -- wp i18n make-pot wp-content/plugins/editor-tweaks-for-codemirror wp-content/plugins/editor-tweaks-for-codemirror/languages/editor-tweaks-for-codemirror.pot --slug=editor-tweaks-for-codemirror --domain=editor-tweaks-for-codemirror --exclude=node_modules,vendor,.git,languages,tests",
+    "i18n:update-po": "wp-env run cli -- wp i18n update-po wp-content/plugins/editor-tweaks-for-codemirror/languages/editor-tweaks-for-codemirror.pot wp-content/plugins/editor-tweaks-for-codemirror/languages/",
+    "i18n:make-mo": "wp-env run cli -- wp i18n make-mo wp-content/plugins/editor-tweaks-for-codemirror/languages/",
+    "i18n": "bun run i18n:make-pot && bun run i18n:update-po && bun run i18n:make-mo",
+    "bundle": "mkdir -p build && bunx bestzip build/editor-tweaks-for-codemirror.zip editor-tweaks-for-codemirror.php includes/ views/ assets/ languages/ sample-data/ uninstall.php readme.txt changelog.txt LICENSE"
   },
   "devDependencies": {
-    "@wordpress/env": "^10.39.0",
-    "bestzip": "^2.2.3"
+    "@playwright/test": "^1.63.0",
+    "@wordpress/env": "^11.15.0",
+    "bestzip": "^4.0.0"
   }
 }
