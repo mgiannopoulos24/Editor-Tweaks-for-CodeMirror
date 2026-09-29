@@ -4,7 +4,7 @@ Tags: codemirror, editor, theme, customize, font
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -17,10 +17,10 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 = Features =
 
 * 40+ Themes - Choose from a wide selection of CodeMirror 5 themes including Monokai, Dracula, Material, Solarized, Nord, GitHub, and many more
-* Font Customization - Select from hundreds of fonts, adjust font weight, size, line height, and letter spacing
+* Font Customization - Select from the Google Fonts library, adjust font weight, size, line height, and letter spacing
 * Display Options - Toggle line numbers, word wrap, ruler column, and current line highlighting
 * Live Preview - Real-time preview editor that updates instantly as you change settings
-* Internationalization - Translation-ready with WordPress.org language packs and Loco Translate support
+* Internationalization - Translation-ready; translations are delivered through translate.wordpress.org
 
 == Installation ==
 
@@ -29,6 +29,12 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 3. Navigate to Settings > Editor Tweaks for CodeMirror to configure your preferences
 
 == Changelog ==
+
+= 1.1.0 =
+* CodeMirror themes are now bundled with the plugin instead of loaded from a CDN
+* Fonts are now loaded from Google Fonts; the font list ships with the plugin
+* Fixed the Solarized Dark and MDN Like themes not loading
+* Removed bundled translation files; translations come from translate.wordpress.org
 
 = 1.0.0 =
 * Initial release of Editor Tweaks for CodeMirror
@@ -50,39 +56,16 @@ For support, please visit the GitHub repository or the WordPress support forums.
 
 == External Services ==
 
-This plugin relies on third-party services to provide core font and theme customization features. No account is required to use this plugin, and no personal data is collected or transmitted beyond standard HTTP requests for public asset loading. All services are used under the permitted exception for plugins providing a service, as outlined in WordPress plugin guidelines.
+This plugin connects to Google Fonts to load the font family you choose for the editor. CodeMirror themes and the list of available fonts are bundled with the plugin and are not loaded remotely.
 
-1. **Fontsource API (api.fontsource.org/v1)**
-   - **Purpose**: Fetches the list of available open-source fonts to populate the font family dropdown in the plugin settings.
-   - **Data Sent**: A GET request is made to retrieve font metadata when the plugin admin page loads. No personal data, user information, or site-specific data is sent.
-   - **Provider**: Fontsource (https://fontsource.org)
-   - **Terms of Service**: https://fontsource.org/terms
-   - **Privacy Policy**: https://fontsource.org/privacy
+**Google Fonts (fonts.googleapis.com, fonts.gstatic.com)**
 
-2. **Fontsource CDN (cdn.jsdelivr.net/npm/@fontsource/)**
-   - **Purpose**: Loads font stylesheets (including specific weights) when a font is selected in the plugin settings. This enables proper rendering of font weight, size, line height, and letter spacing customizations.
-   - **Data Sent**: A GET request for the corresponding font CSS file is made when a user selects a font or changes font weight. No personal data is transmitted.
-   - **Provider**: Fontsource via jsDelivr CDN (https://www.jsdelivr.com)
-   - **Terms of Service**: https://www.jsdelivr.com/terms
-   - **Privacy Policy**: https://www.jsdelivr.com/privacy
-   - **License Note**: All fonts hosted on Fontsource are licensed under the Open Font License (OFL) or GPL, which are fully compatible with WordPress plugin guidelines.
-
-3. **CodeMirror CDN (cdn.jsdelivr.net/npm/codemirror@5.65.16/)**
-   - **Purpose**: Loads CodeMirror 5 theme CSS files when a theme is selected in the plugin settings.
-   - **Data Sent**: A GET request for the corresponding theme CSS file is made when a user selects a theme. No personal data is transmitted.
-   - **Provider**: CodeMirror via jsDelivr CDN (https://www.jsdelivr.com)
-   - **Terms of Service**: https://www.jsdelivr.com/terms
-   - **Privacy Policy**: https://www.jsdelivr.com/privacy
-   - **License Note**: CodeMirror 5 is licensed under MIT, which is fully compatible with WordPress plugin guidelines.
-
-== Notes on Remote Asset Loading ==
-
-This plugin loads font and theme assets from public CDNs rather than bundling them locally to:
-- Keep the plugin lightweight (avoid bundling hundreds of font files and theme CSS)
-- Ensure users have access to the latest font and theme versions
-- Comply with GPL compatibility requirements for all assets
-
-All assets are publicly available, require no authentication to access, and no user data is tracked by the service providers.
+* **What it is used for**: Loading the stylesheet and font files of the font family selected in Settings > Editor Tweaks for CodeMirror.
+* **When data is sent**: Only when a font family is selected. The request is made on admin pages with a code editor (theme and plugin file editors, the Customizer, the post editor) and on the plugin settings page when previewing a font. No request is made when the font family is set to "Default (inherit)".
+* **What data is sent**: The font family name and weights. As with any web request, the visitor's browser also sends its IP address and user agent to Google. No account is required.
+* **Provider**: Google LLC
+* **Terms of Service**: https://policies.google.com/terms
+* **Privacy Policy**: https://policies.google.com/privacy
 
 == Screenshots ==
 

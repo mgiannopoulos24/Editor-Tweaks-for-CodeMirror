@@ -67,7 +67,7 @@
             'twilight': 'twilight', 'vibrant-ink': 'vibrant-ink',
             'xq-dark': 'xq-dark', 'yeti': 'yeti', 'zenburn': 'zenburn',
             'base16-light': 'base16-light', 'eclipse': 'eclipse',
-            'elegant': 'elegant', 'idea': 'idea', 'md-like': 'md-like', 'xq-light': 'xq-light',
+            'elegant': 'elegant', 'idea': 'idea', 'md-like': 'mdn-like', 'xq-light': 'xq-light',
         };
 
         // Custom themes don't need CSS loading
@@ -76,7 +76,8 @@
         }
 
         const cmThemeName = themeMap[themeName] || themeName;
-        const themeFileName = cmThemeName.replace(/\s+/g, '-');
+        // Variants share one file (e.g., 'solarized dark' lives in solarized.css)
+        const themeFileName = cmThemeName.split(' ')[0];
         const styleId = 'editor-tweaks-for-codemirror-theme-' + themeFileName;
 
         // Check if already loaded
@@ -84,11 +85,11 @@
             return;
         }
 
-        // Load from CDN
+        // Load from the plugin's bundled CodeMirror themes
         const link = document.createElement('link');
         link.id = styleId;
         link.rel = 'stylesheet';
-        link.href = 'https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/' + themeFileName + '.css';
+        link.href = editorTweaksForCodeMirrorSettings.themeBaseUrl + themeFileName + '.css';
         link.onerror = function() {
             if (link.parentNode) {
                 link.parentNode.removeChild(link);
@@ -154,7 +155,7 @@
                     'eclipse': 'eclipse',
                     'elegant': 'elegant',
                     'idea': 'idea',
-                    'md-like': 'md-like',
+                    'md-like': 'mdn-like',
                     'xq-light': 'xq-light',
                 };
                 

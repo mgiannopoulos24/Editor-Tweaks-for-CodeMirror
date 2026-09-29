@@ -10,7 +10,7 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 
 - **40+ Themes**: Choose from a wide selection of CodeMirror 5 themes including Monokai, Dracula, Material, Solarized, Nord, GitHub, and many more
 - **Font Customization**: 
-  - Select from hundreds of fonts via Fontsource API
+  - Select from the Google Fonts library (the font list is bundled; font files load from Google Fonts)
   - Adjust font weight (100-900)
   - Customize font size (minimum 10px, no maximum)
   - Set line height with multipliers (1.5) or custom units (1.5em, 24px, etc.)
@@ -21,13 +21,13 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
   - Enable/disable word wrap
   - Set ruler column for line length guidelines
   - Highlight current line with subtle background color
-- **Internationalization (i18n)**: Translation-ready with WordPress.org language packs and Loco Translate support (translations load from `wp-content/languages/plugins` with bundled fallback)
+- **Internationalization (i18n)**: Translation-ready; translations are delivered through translate.wordpress.org language packs and load just in time from `wp-content/languages/plugins`
 - **Live Preview**: Real-time preview editor that updates instantly as you change settings
 - **Sample Code Preview**: Test your settings with sample JavaScript, PHP, CSS, HTML, and JSON files
 - **Easy Settings**: Intuitive admin interface with help icon tooltips for all options
 - **Clean Uninstall**: Removes all plugin data when uninstalled
 - **Universal Application**: Settings apply to all CodeMirror editors throughout WordPress
-- **Dynamic Theme Loading**: Themes are automatically loaded from CDN when selected
+- **Bundled Themes**: CodeMirror theme stylesheets ship with the plugin and load only when selected
 - **Lightweight**: Minimal overhead with vanilla JavaScript implementation
 
 ## Installation
@@ -89,17 +89,18 @@ This will start a WordPress instance at `http://localhost:8888`
 
 ### Translation Scripts
 
-- `bun run i18n` - Full flow: generate POT, update all POs, compile MOs (e.g. after adding translatable strings)
-- `bun run i18n:make-pot` - Generate POT template only
-- `bun run i18n:update-po` - Update PO files from POT template
-- `bun run i18n:make-mo` - Compile MO files from PO files
+- `bun run i18n` - Regenerate the POT template (e.g. after adding translatable strings). Translations themselves are managed on translate.wordpress.org, so no `.po`/`.mo` files are bundled.
+
+### Maintenance Scripts
+
+- `bun run fonts:update` - Refresh the bundled Google Fonts catalog (`assets/data/google-fonts.json`)
 
 ## Usage
 
 1. Navigate to **Settings → Editor Tweaks for CodeMirror** in your WordPress admin
 2. Configure your preferences:
    - **Theme**: Select from 40+ available CodeMirror 5 themes (preview updates instantly)
-   - **Font Family**: Search and select from hundreds of available fonts
+   - **Font Family**: Search and select any Google Fonts family
    - **Font Weight**: Choose font weight (100-900)
    - **Font Size**: Set font size in pixels (minimum 10px)
    - **Line Height**: Set line height as multiplier (1.5) or with units (1.5em, 24px, etc.)
@@ -129,9 +130,10 @@ editor-tweaks-for-codemirror/
 │   ├── js/          # JavaScript files
 │   │   ├── admin.js
 │   │   └── editor.js
-│   └── select2/     # Select2 library files
-│       ├── css/
-│       └── js/
+│   ├── data/        # Bundled Google Fonts catalog (google-fonts.json)
+│   └── vendor/      # Third-party libraries
+│       ├── codemirror/theme/  # CodeMirror 5.65.16 theme stylesheets
+│       └── select2/           # Select2 library files
 ├── includes/        # PHP class files
 │   ├── class-editor-tweaks-for-codemirror.php
 │   ├── class-editor-tweaks-for-codemirror-admin.php
@@ -145,7 +147,8 @@ editor-tweaks-for-codemirror/
 │   ├── example.css
 │   ├── example.html
 │   └── example.json
-├── languages/       # Translation files (regenerate with `bun run i18n`)
+├── languages/       # POT template (regenerate with `bun run i18n`)
+├── scripts/         # Maintenance scripts (Google Fonts catalog)
 ├── tests/
 │   └── e2e-pw/      # Playwright end-to-end tests
 ├── editor-tweaks-for-codemirror.php   # Main plugin file
@@ -176,7 +179,11 @@ The plugin supports all CodeMirror 5 themes, including:
 - **Dark Themes**: Monokai, Dracula, Material, Material Darker, Material Ocean, Solarized Dark, Nord, Ambiance, Blackboard, Cobalt, and many more
 - **Light Themes**: Solarized Light, GitHub Light, Eclipse, Elegant, IDEA, and more
 
-Themes are automatically loaded from CDN when selected, so no manual installation is required.
+Theme stylesheets are bundled with the plugin and loaded only when selected, so no manual installation is required.
+
+### External Services
+
+The selected font family is loaded from Google Fonts (`fonts.googleapis.com`). No request is made when the font family is left on "Default (inherit)". See the External Services section of `readme.txt` for details.
 
 ### Extending Settings
 

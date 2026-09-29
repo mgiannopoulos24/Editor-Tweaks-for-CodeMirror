@@ -16,7 +16,7 @@
         init();
     }
 
-    // Available weights per font family, from the Fontsource API.
+    // Available weights per font family, from the bundled Google Fonts catalog.
     const fontWeights = {};
 
     // Translated weight labels, captured from the rendered select.
@@ -115,10 +115,8 @@
             });
         }
 
-        // Always fetch fonts from Fontsource API (api.fontsource.org/v1) to populate the full list.
-        // Font stylesheets and specific weights are loaded via the Fontsource CDN (cdn.jsdelivr.net/npm/@fontsource/)
-        // because WordPress does not bundle font files. This is required to properly apply font weight, size,
-        // line height, and letter spacing customizations.
+        // Populate the list from the Google Fonts catalog bundled with the plugin.
+        // Font stylesheets are loaded from Google Fonts (fonts.googleapis.com) on selection.
         // The saved value will be preserved during the fetch
         fetchFonts(fontFamilySelect);
 
@@ -309,7 +307,7 @@
             'eclipse': 'eclipse',
             'elegant': 'elegant',
             'idea': 'idea',
-            'md-like': 'md-like',
+            'md-like': 'mdn-like',
             'xq-light': 'xq-light',
         };
 
@@ -326,8 +324,8 @@
         // Get the actual CodeMirror theme name
         const cmThemeName = themeMap[themeName] || themeName;
         
-        // Handle themes with spaces (e.g., 'solarized dark')
-        const themeFileName = cmThemeName.replace(/\s+/g, '-');
+        // Variants share one file (e.g., 'solarized dark' lives in solarized.css)
+        const themeFileName = cmThemeName.split(' ')[0];
         const styleId = 'editor-tweaks-for-codemirror-theme-' + themeFileName;
 
         // Check if CSS is already loaded
@@ -339,15 +337,12 @@
             return;
         }
 
-        // Try to load from WordPress's CodeMirror first (if available)
-        // Then fallback to CDN
-        const cdnUrl = 'https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/' + themeFileName + '.css';
-        
+
         // Create link element
         const link = document.createElement('link');
         link.id = styleId;
         link.rel = 'stylesheet';
-        link.href = cdnUrl;
+        link.href = editorTweaksForCodeMirrorAdminSettings.themeBaseUrl + themeFileName + '.css';
         link.onload = function() {
             // CSS loaded successfully
             if (callback && typeof callback === 'function') {
@@ -445,7 +440,7 @@
                 'eclipse': 'eclipse',
                 'elegant': 'elegant',
                 'idea': 'idea',
-                'md-like': 'md-like',
+                'md-like': 'mdn-like',
                 'xq-light': 'xq-light',
             };
             
@@ -569,11 +564,11 @@
     }
 
     function fetchFonts(select) {
-        fetch('https://api.fontsource.org/v1/fonts')
+        fetch(editorTweaksForCodeMirrorAdminSettings.googleFontsUrl)
             .then(response => response.json())
             .then(data => {
-                // Sort fonts alphabetically
-                data.sort((a, b) => a.family.localeCompare(b.family));
+                // Map of family => available weights, sorted alphabetically
+                const families = Object.keys(data).sort((a, b) => a.localeCompare(b));
 
                 // Get saved value
                 const savedValue = select.value;
@@ -584,17 +579,17 @@
                 }
 
                 // Add all fonts as options
-                data.forEach(font => {
+                families.forEach(family => {
                     const option = document.createElement('option');
-                    option.value = font.family;
-                    option.textContent = font.family;
-                    if (font.family === savedValue) {
+                    option.value = family;
+                    option.textContent = family;
+                    if (family === savedValue) {
                         option.selected = true;
                     }
                     select.appendChild(option);
 
-                    if (Array.isArray(font.weights) && font.weights.length) {
-                        fontWeights[font.family] = font.weights.map(String);
+                    if (Array.isArray(data[family]) && data[family].length) {
+                        fontWeights[family] = data[family].map(String);
                     }
                 });
 
@@ -612,7 +607,7 @@
             .catch(err => {
                 const errorOption = document.createElement('option');
                 errorOption.value = '';
-                errorOption.textContent = 'Error loading fonts';
+                errorOption.textContent = editorTweaksForCodeMirrorAdminSettings.i18n.errorLoadingFonts;
                 select.appendChild(errorOption);
             });
     }
@@ -655,35 +650,26 @@
 
         fontWeight = fontWeight || '400';
 
-        // Convert font family name to Fontsource format (lowercase, spaces to dashes)
-        const fontId = fontFamily.toLowerCase().replace(/\s+/g, '-');
+        // Request 400 plus the selected weight, limited to what the family has
+        const available = fontWeights[fontFamily] || ['400'];
+        let weights = available.filter(function(weight) {
+            return weight === '400' || weight === fontWeight;
+        });
+        if (!weights.length) {
+            weights = [available[0]];
+        }
 
         // Remove existing font links
         const existingLinks = document.querySelectorAll('[id^="editor-tweaks-for-codemirror-font-preview"]');
         existingLinks.forEach(link => link.remove());
 
-        // Load base font (index.css includes common weights)
-        const baseLink = document.createElement('link');
-        baseLink.id = 'editor-tweaks-for-codemirror-font-preview-base';
-        baseLink.rel = 'stylesheet';
-        baseLink.href = 'https://cdn.jsdelivr.net/npm/@fontsource/' + fontId + '/index.css';
-        baseLink.onerror = function() {
-            // Font failed to load, continue without it
-        };
-        document.head.appendChild(baseLink);
-
-        // Try to load specific weight if it's not a common one (400, 700 are usually in index.css)
-        // For other weights, try loading the specific file
-        if (fontWeight !== '400' && fontWeight !== '700') {
-            const weightLink = document.createElement('link');
-            weightLink.id = 'editor-tweaks-for-codemirror-font-preview-weight';
-            weightLink.rel = 'stylesheet';
-            weightLink.href = 'https://cdn.jsdelivr.net/npm/@fontsource/' + fontId + '/' + fontWeight + '.css';
-            weightLink.onerror = function() {
-                // If specific weight fails, the base font will handle it via font-synthesis
-            };
-            document.head.appendChild(weightLink);
-        }
+        const link = document.createElement('link');
+        link.id = 'editor-tweaks-for-codemirror-font-preview';
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=' +
+            encodeURIComponent(fontFamily).replace(/%20/g, '+') +
+            ':wght@' + weights.join(';') + '&display=swap';
+        document.head.appendChild(link);
 
         // Update preview editor if it exists
         if (previewEditor) {

@@ -61,11 +61,6 @@ class Editor_Tweaks_For_CodeMirror {
 	 */
 	private function init() {
 		/**
-		 * Load text domain
-		 */
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ), 1 );
-
-		/**
 		 * Initialize admin
 		 */
 		if ( is_admin() ) {
@@ -78,16 +73,5 @@ class Editor_Tweaks_For_CodeMirror {
 		 */
 		require_once EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_DIR . 'includes/class-editor-tweaks-for-codemirror-editor.php';
 		$this->editor = new Editor_Tweaks_For_CodeMirror_Editor();
-	}
-
-	/**
-	 * Load plugin text domain
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			'editor-tweaks-for-codemirror',
-			false,
-			dirname( EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_BASENAME ) . '/languages'
-		);
 	}
 }

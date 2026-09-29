@@ -176,7 +176,13 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 		}
 
 		if ( isset( $input['font_family'] ) ) {
-			$sanitized['font_family'] = sanitize_text_field( $input['font_family'] );
+			$font_family = sanitize_text_field( $input['font_family'] );
+			/**
+			 * Only accept families from the bundled Google Fonts catalog
+			 */
+			if ( '' === $font_family || array_key_exists( $font_family, Editor_Tweaks_For_CodeMirror_Editor::get_google_fonts() ) ) {
+				$sanitized['font_family'] = $font_family;
+			}
 		}
 
 		if ( isset( $input['font_weight'] ) ) {
@@ -350,7 +356,7 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 				<option value="<?php echo esc_attr( $font_family ); ?>" selected><?php echo esc_html( $font_family ); ?></option>
 			<?php endif; ?>
 		</select>
-		<?php $this->render_help_icon( __( 'Select a font family. Fonts are loaded from Fontsource.', 'editor-tweaks-for-codemirror' ) ); ?>
+		<?php $this->render_help_icon( __( 'Select a font family. Fonts are loaded from Google Fonts.', 'editor-tweaks-for-codemirror' ) ); ?>
 		<?php
 	}
 
@@ -509,7 +515,7 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 		 */
 		wp_enqueue_style(
 			'select2',
-			EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/select2/css/select2.min.css',
+			EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/vendor/select2/css/select2.min.css',
 			array(),
 			'4.1.0'
 		);
@@ -533,7 +539,7 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 
 		wp_enqueue_script(
 			'select2',
-			EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/select2/js/select2.min.js',
+			EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/vendor/select2/js/select2.min.js',
 			array( 'jquery' ),
 			'4.1.0',
 			true
@@ -544,7 +550,7 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 
 		wp_enqueue_script(
 			'select2-i18n',
-			EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/select2/js/i18n/' . $select2_language . '.js',
+			EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/vendor/select2/js/i18n/' . $select2_language . '.js',
 			array( 'select2' ),
 			'4.1.0',
 			true
@@ -596,12 +602,15 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 				'rulerColumn'          => isset( $options['ruler_column'] ) ? $options['ruler_column'] : 0,
 				'currentLineHighlight' => isset( $options['current_line_highlight'] ) ? $options['current_line_highlight'] : false,
 				'pluginUrl'            => EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL,
+				'themeBaseUrl'         => EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/vendor/codemirror/theme/',
+				'googleFontsUrl'       => EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/data/google-fonts.json?ver=' . EDITOR_TWEAKS_FOR_CODEMIRROR_VERSION,
 				'sampleFiles'          => $sample_files,
 				'select2Language'      => $select2_language,
 				'i18n'                 => array(
-					'selectTheme'  => __( 'Select a theme…', 'editor-tweaks-for-codemirror' ),
-					'searchFont'   => __( 'Search and select a font…', 'editor-tweaks-for-codemirror' ),
-					'noFontsFound' => __( 'No fonts found', 'editor-tweaks-for-codemirror' ),
+					'selectTheme'       => __( 'Select a theme…', 'editor-tweaks-for-codemirror' ),
+					'searchFont'        => __( 'Search and select a font…', 'editor-tweaks-for-codemirror' ),
+					'noFontsFound'      => __( 'No fonts found', 'editor-tweaks-for-codemirror' ),
+					'errorLoadingFonts' => __( 'Error loading fonts', 'editor-tweaks-for-codemirror' ),
 				),
 			)
 		);
@@ -619,7 +628,7 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 
 		foreach ( $candidates as $candidate ) {
 			if ( preg_match( '/^[A-Za-z]+(-[A-Za-z]+)?$/', $candidate )
-				&& file_exists( EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_DIR . 'assets/select2/js/i18n/' . $candidate . '.js' ) ) {
+				&& file_exists( EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_DIR . 'assets/vendor/select2/js/i18n/' . $candidate . '.js' ) ) {
 				return $candidate;
 			}
 		}

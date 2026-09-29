@@ -3,7 +3,7 @@ build/
 
 # Dependencies
 node_modules/
-vendor/
+/vendor/
 
 # Tests
 tests/**/test-results

@@ -60,9 +60,15 @@ After CHANGELOG update, update version in:
 ## Translation Updates
 
 After adding new translatable strings:
-- Run: `bun run i18n`
+- Run: `bun run i18n` (regenerates the POT only)
 - Requires wp-env running (`bun run start`)
-- Never manually edit .pot/.po/.mo files
+- Never manually edit the .pot file
+- Do not add .po/.mo files or call `load_plugin_textdomain()`: WordPress.org delivers translations via translate.wordpress.org and loads them just in time
+
+## Remote Assets
+
+- Never load scripts, styles, or data from a CDN; bundle them in the plugin
+- The only allowed remote call is Google Fonts for the selected font (documented under External Services in readme.txt)
 
 ## Code Style
 
@@ -77,5 +83,6 @@ bun run start     # Start dev environment
 bun run stop      # Stop dev environment
 bun run bundle    # Create distribution zip
 bun run lint      # PHP syntax check
-bun run i18n       # Regen POT, update POs, compile MOs
+bun run i18n      # Regen POT
+bun run fonts:update # Refresh bundled Google Fonts catalog
 ```

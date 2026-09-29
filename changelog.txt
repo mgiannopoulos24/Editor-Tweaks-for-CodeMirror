@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 1.1.0 =
+* CodeMirror themes are now bundled with the plugin instead of loaded from a CDN
+* Fonts are now loaded from Google Fonts; the font list ships with the plugin
+* Fixed the Solarized Dark and MDN Like themes not loading
+* Removed bundled translation files; translations come from translate.wordpress.org
+
 = 1.0.0 =
 * Initial release of Editor Tweaks for CodeMirror
 * 40+ CodeMirror 5 themes support
