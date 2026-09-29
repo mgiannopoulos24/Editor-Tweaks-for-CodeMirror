@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 1.1.1 =
+* Fixed mismatched "Tested up to" value between the plugin header and readme.txt
+
 = 1.1.0 =
 * CodeMirror themes are now bundled with the plugin instead of loaded from a CDN
 * Fonts are now loaded from Google Fonts; the font list ships with the plugin

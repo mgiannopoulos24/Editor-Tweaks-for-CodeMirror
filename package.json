@@ -1,6 +1,6 @@
 {
   "name": "editor-tweaks-for-codemirror",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Tweak every CodeMirror editor in WordPress with custom themes, fonts, and display options",
   "author": "Marios Giannopoulos",
   "license": "GPL-3.0-or-later",
