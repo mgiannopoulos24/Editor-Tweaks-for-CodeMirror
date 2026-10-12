@@ -172,7 +172,15 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 		$sanitized = array();
 
 		if ( isset( $input['theme'] ) ) {
-			$sanitized['theme'] = sanitize_text_field( $input['theme'] );
+			$theme = sanitize_text_field( $input['theme'] );
+			/**
+			 * Only accept themes from the whitelist of available theme slugs
+			 */
+			if ( array_key_exists( $theme, self::get_themes() ) ) {
+				$sanitized['theme'] = $theme;
+			} else {
+				$sanitized['theme'] = 'default';
+			}
 		}
 
 		if ( isset( $input['font_family'] ) ) {
@@ -267,12 +275,12 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	}
 
 	/**
-	 * Render theme field
+	 * Get the list of available editor themes.
+	 *
+	 * @return array Map of theme slug => translated label.
 	 */
-	public function render_theme_field() {
-		$options = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$theme   = isset( $options['theme'] ) ? $options['theme'] : 'default';
-		$themes  = array(
+	public static function get_themes() {
+		return array(
 			'default'                 => __( 'Default', 'editor-tweaks-for-codemirror' ),
 			/**
 			 * Popular Dark Themes
@@ -325,6 +333,15 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 			'md-like'                 => __( 'MD Like', 'editor-tweaks-for-codemirror' ),
 			'xq-light'                => __( 'XQ Light', 'editor-tweaks-for-codemirror' ),
 		);
+	}
+
+	/**
+	 * Render theme field
+	 */
+	public function render_theme_field() {
+		$options = get_option( 'editor_tweaks_for_codemirror_options', array() );
+		$theme   = isset( $options['theme'] ) ? $options['theme'] : 'default';
+		$themes  = self::get_themes();
 		?>
 		<select name="editor_tweaks_for_codemirror_options[theme]" id="etcm_theme">
 			<?php foreach ( $themes as $value => $label ) : ?>

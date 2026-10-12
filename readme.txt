@@ -2,9 +2,9 @@
 Contributors: mgiannopoulos24
 Tags: codemirror, editor, theme, customize, font
 Requires at least: 6.5
-Tested up to: 7.1
+Tested up to: 7.1.3
 Requires PHP: 8.1
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -29,6 +29,9 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 3. Navigate to Settings > Editor Tweaks for CodeMirror to configure your preferences
 
 == Changelog ==
+
+= 1.1.2 =
+* Saved theme is now validated against the list of available themes, falling back to the default for any unrecognized value
 
 = 1.1.1 =
 * Fixed mismatched "Tested up to" value between the plugin header and readme.txt

@@ -1,6 +1,6 @@
 {
   "name": "editor-tweaks-for-codemirror",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Tweak every CodeMirror editor in WordPress with custom themes, fonts, and display options",
   "author": "Marios Giannopoulos",
   "license": "GPL-3.0-or-later",
@@ -25,8 +25,8 @@
     "bundle": "mkdir -p build && bunx bestzip build/editor-tweaks-for-codemirror.zip editor-tweaks-for-codemirror.php includes/ views/ assets/ languages/ sample-data/ uninstall.php readme.txt changelog.txt LICENSE"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
-    "@wordpress/env": "^11.15.0",
-    "bestzip": "^4.0.0"
+    "@playwright/test": "^1.64.0",
+    "@wordpress/env": "^11.17.0",
+    "bestzip": "^4.0.3"
   }
 }
