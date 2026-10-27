@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 1.1.3 =
+* "Tested up to" now uses the major WordPress version (7.1)
+
 = 1.1.2 =
 * Saved theme is now validated against the list of available themes, falling back to the default for any unrecognized value
 
