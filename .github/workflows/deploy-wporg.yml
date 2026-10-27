@@ -1,0 +1,51 @@
+name: Deploy to WordPress.org
+
+on:
+  workflow_dispatch:
+  # Uncomment to deploy automatically when a version tag is pushed.
+  # push:
+  #   tags: [ 'v*' ]
+
+concurrency:
+  group: deploy-wporg
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Push plugin to WordPress.org SVN
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+
+      - name: Read version and check it matches readme.txt (and the tag, if any)
+        id: version
+        run: |
+          ver="$(sed -n 's/^ \* Version: *//p' editor-tweaks-for-codemirror.php | tr -d '\r')"
+          stable="$(sed -n 's/^Stable tag: *//p' readme.txt | tr -d '\r')"
+          [ "$ver" = "$stable" ] || { echo "::error::Plugin Version $ver does not match readme.txt Stable tag $stable"; exit 1; }
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            tag="${GITHUB_REF_NAME#v}"
+            [ "$tag" = "$ver" ] || { echo "::error::Tag v$tag does not match editor-tweaks-for-codemirror.php Version $ver"; exit 1; }
+          fi
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+
+      # Reuse the release zip so SVN gets exactly what users download.
+      - name: Build plugin files
+        run: |
+          bun run bundle
+          mkdir -p build/svn
+          unzip -q build/editor-tweaks-for-codemirror.zip -d build/svn
+
+      - name: Install SVN
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: WordPress Plugin Deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: editor-tweaks-for-codemirror
+          VERSION: ${{ steps.version.outputs.version }}
+          BUILD_DIR: build/svn
