@@ -1,10 +1,9 @@
 name: Deploy to WordPress.org
 
 on:
+  push:
+    tags: [ 'v*' ]
   workflow_dispatch:
-  # Uncomment to deploy automatically when a version tag is pushed.
-  # push:
-  #   tags: [ 'v*' ]
 
 concurrency:
   group: deploy-wporg

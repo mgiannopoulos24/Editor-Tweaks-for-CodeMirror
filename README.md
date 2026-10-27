@@ -116,8 +116,9 @@ This will start a WordPress instance at `http://localhost:8888`
    - Theme editor
    - Plugin editor
    - Customizer code editor
-   - Post editor code blocks
-   - Any other CodeMirror instances
+   - Any other CodeMirror 5 instance where the plugin is loaded
+
+**Note:** The Gutenberg Code block and Custom HTML block are not CodeMirror editors, so these settings do not apply to them.
 
 ## Project Structure
 

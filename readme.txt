@@ -4,7 +4,7 @@ Tags: codemirror, editor, theme, customize, font
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -29,6 +29,10 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 3. Navigate to Settings > Editor Tweaks for CodeMirror to configure your preferences
 
 == Changelog ==
+
+= 1.1.4 =
+* WordPress.org deployment now runs automatically when a v* tag is pushed
+* Corrected the FAQ and README to clarify that the Gutenberg Code block is not a CodeMirror editor and is not affected by the plugin
 
 = 1.1.3 =
 * "Tested up to" now uses the major WordPress version (7.1)
@@ -55,7 +59,7 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 == Frequently Asked Questions ==
 
 = Does this plugin work with the Gutenberg code block? =
-Yes, it applies to all CodeMirror editor instances in WordPress, including the code block in Gutenberg.
+No. The Gutenberg Code block is a RichText field, not a CodeMirror editor, so these settings do not apply to it. The plugin works with CodeMirror 5 editors such as the theme and plugin file editors and the Customizer's Additional CSS editor.
 
 = Where are the settings? =
 Go to Settings > Editor Tweaks for CodeMirror in your WordPress admin.

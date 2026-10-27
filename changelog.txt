@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.1.4 =
+* WordPress.org deployment now runs automatically when a v* tag is pushed
+* Corrected the FAQ and README to clarify that the Gutenberg Code block is not a CodeMirror editor and is not affected by the plugin
+
 = 1.1.3 =
 * "Tested up to" now uses the major WordPress version (7.1)
 
