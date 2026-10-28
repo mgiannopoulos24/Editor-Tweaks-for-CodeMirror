@@ -1,88 +1,73 @@
-# Agent Development Guide
+# Agent Guide
 
-This document outlines development guidelines for agents working on Editor Tweaks for CodeMirror.
+WordPress plugin that customizes CodeMirror **5** instances (not CodeMirror 6) with themes, fonts, and display options.
 
-## Project Overview
+## Verify
 
-A WordPress plugin that customizes CodeMirror editor instances with themes, fonts, and display options. Uses **CodeMirror 5** (not CodeMirror 6).
+Run before reporting work as done:
 
-## Key Files
+- `bun run lint` — PHPCS with the project ruleset
+- `bun run test:e2e` — Playwright; requires `bun run start` (wp-env)
 
-- `editor-tweaks-for-codemirror.php` - Main plugin file
-- `includes/class-editor-tweaks-for-codemirror-admin.php` - Admin settings and UI
-- `includes/class-editor-tweaks-for-codemirror-editor.php` - Editor asset enqueuing
-- `assets/js/editor.js` - Editor customization logic
-- `assets/js/admin.js` - Admin preview logic
-- `assets/css/editor.css` - Editor styling
+## Key files
 
-## Editor Customization Pattern
+- `editor-tweaks-for-codemirror.php` — plugin bootstrap, constants, version
+- `includes/class-editor-tweaks-for-codemirror-admin.php` — settings, sanitization, settings UI
+- `includes/class-editor-tweaks-for-codemirror-editor.php` — asset enqueuing, localized settings
+- `assets/js/editor.js` — applies settings to editor instances
+- `assets/js/admin.js` — live admin preview
+- `assets/css/editor.css` — editor styling
 
-When adding new editor settings:
+## Adding an editor setting
 
-1. **Admin settings** (`class-editor-tweaks-for-codemirror-admin.php`):
-   - Register in `register_settings()`
-   - Add sanitization in `sanitize_settings()`
-   - Add render method
+1. **Admin** (`class-editor-tweaks-for-codemirror-admin.php`): register in `register_settings()`, sanitize in `sanitize_settings()`, add a render method.
+2. **Pass to JS** (`class-editor-tweaks-for-codemirror-editor.php`): add it to the `wp_localize_script` array.
+3. **Apply** (`assets/js/editor.js`): add logic in `customizeEditor()`, targeting `.CodeMirror-code`, `.CodeMirror pre`, and `.CodeMirror-line`.
+4. **Preview** (`assets/js/admin.js`): add to `settingsInputs` and wire up live updates.
 
-2. **Settings passing** (`class-editor-tweaks-for-codemirror-editor.php`):
-   - Add to `wp_localize_script` array
+## Gutters
 
-3. **Editor application** (`editor.js`):
-   - Add logic in `customizeEditor()`
-   - Apply to `.CodeMirror-code`, `.CodeMirror pre`, `.CodeMirror-line`
-   - **Exclude gutters**: Never style `.CodeMirror-gutters`, `.CodeMirror-gutter`, `.CodeMirror-linenumber`
+Never apply `font-family`, `font-weight`, `font-size`, `letter-spacing`, or `line-height` to `.CodeMirror-gutters`, `.CodeMirror-gutter`, or `.CodeMirror-linenumber`. Explicitly reset gutter styles if inherited values leak in.
 
-4. **Admin preview** (`admin.js`):
-   - Add to `settingsInputs` array
-   - Add event listeners for real-time updates
+## PHP and i18n
 
-## Gutter Rules
+- Use `__()` / `_e()` for string literals. Use `esc_html__()` / `esc_html_e()` only when the string contains a variable; escape at the output boundary instead.
+- Text domain: `editor-tweaks-for-codemirror`.
+- Do not add `.po`/`.mo` files or call `load_plugin_textdomain()`; WordPress.org loads translations.
+- After adding strings, run `bun run i18n` (needs `bun run start`). Never edit the `.pot` by hand.
 
-- Never apply font-family, font-weight, font-size, letter-spacing, or line-height to gutters
-- Explicitly reset gutter styles if needed
+## JavaScript
 
-## Documentation Requirements
+- Vanilla JS, no build step.
+- Each script has exactly one localized object, defined by its enqueue. Use it directly: no `typeof` guard, no inline fallback strings, no cross-referencing another file's object.
 
-After any code change:
+## CSS
 
-1. **README.md** - Update Features and Usage sections
-2. **readme.txt** - Update Features and Changelog sections to match README.md
-3. **CHANGELOG.md** - Add entry under appropriate version
-   - Follow Keep a Changelog format
-   - Use semantic versioning (MAJOR.MINOR.PATCH)
+- Prefix classes with `editor-tweaks-for-codemirror-`.
 
-## Version Updates
+## Remote assets
 
-After CHANGELOG update, update version in:
-1. `editor-tweaks-for-codemirror.php` (header and constant)
-2. `package.json`
+Never load scripts, styles, or data from a CDN; bundle them. The only allowed remote request is Google Fonts for the selected font (documented under External Services in `readme.txt`).
 
-## Translation Updates
+## Docs and release
 
-After adding new translatable strings:
-- Run: `bun run i18n` (regenerates the POT only)
-- Requires wp-env running (`bun run start`)
-- Never manually edit the .pot file
-- Do not add .po/.mo files or call `load_plugin_textdomain()`: WordPress.org delivers translations via translate.wordpress.org and loads them just in time
+After a code change:
 
-## Remote Assets
+1. Update `README.md` (Features, Usage).
+2. Mirror it in `readme.txt` (Features, Changelog).
+3. Add a `CHANGELOG.md` entry (Keep a Changelog, SemVer).
+4. Bump the version in `editor-tweaks-for-codemirror.php` (header and constant) and `package.json`.
 
-- Never load scripts, styles, or data from a CDN; bundle them in the plugin
-- The only allowed remote call is Google Fonts for the selected font (documented under External Services in readme.txt)
+Version bumps are for changes that ship to users: PHP/JS/CSS, behavior, settings, bundled assets. Repo-only changes — README/`readme.txt` wording, CI or GitHub workflow tweaks, dev dependency updates, tooling — do not need a version bump. Use judgment: if the change alters what users install or how a release is produced, bump it; otherwise skip the bump and the changelog entry.
 
-## Code Style
-
-- PHP: WordPress coding standards, proper sanitization
-- JavaScript: Vanilla JS, `'use strict'`, check undefined
-- CSS: Use `editor-tweaks-for-codemirror-` prefix, avoid `!important`
-
-## Available Scripts
+## Scripts
 
 ```bash
-bun run start     # Start dev environment
-bun run stop      # Stop dev environment
-bun run bundle    # Create distribution zip
-bun run lint      # PHP syntax check
-bun run i18n      # Regen POT
+bun run start        # Start wp-env
+bun run stop         # Stop wp-env
+bun run lint         # PHPCS
+bun run test:e2e     # Playwright E2E
+bun run i18n         # Regenerate POT
+bun run bundle       # Distribution zip
 bun run fonts:update # Refresh bundled Google Fonts catalog
 ```
