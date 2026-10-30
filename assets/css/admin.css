@@ -5,6 +5,30 @@
  */
 
 /* Two-column layout: settings form left, sticky preview right. */
+/* Scope tabs: plain WordPress nav-tab with dashicons */
+.editor-tweaks-for-codemirror-settings .nav-tab .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    vertical-align: text-bottom;
+    margin-right: 4px;
+}
+
+/* Description spacing after tabs */
+.editor-tweaks-for-codemirror-settings > .description {
+    margin-top: 12px;
+    margin-bottom: 24px;
+}
+
+/* Submit and reset buttons wrapper */
+.editor-tweaks-for-codemirror-submit-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
 .editor-tweaks-for-codemirror-layout {
     display: flex;
     align-items: flex-start;

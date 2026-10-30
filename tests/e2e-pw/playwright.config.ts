@@ -7,18 +7,14 @@ import { defineConfig, devices } from '@playwright/test';
  *   bun run test:e2e
  *
  * Expects the wp-env site (bun run start) — it is started if not reachable.
- * The `setup` project logs in once and the specs reuse that session.
- *
- * Specs are plain JS (with JSDoc types): when Playwright runs under Bun, its
- * TypeScript transform is bypassed for test files. Shared helpers can be TS.
+ * The admin session is created once by the auth fixture and reused by the specs.
  */
 const baseURL = process.env.WP_BASE_URL ?? 'http://localhost:8888';
 
-/** Written by auth.setup.js, reused by every spec. */
-export const authFile = path.join( __dirname, '.auth', 'admin.json' );
-
 export default defineConfig( {
-	testDir: './specs',
+	testDir: './tests',
+	outputDir: path.join( __dirname, 'test-results' ),
+	globalSetup: require.resolve( './global-setup.ts' ),
 	// Specs share one WordPress install and one options row.
 	fullyParallel: false,
 	workers: 1,
@@ -26,26 +22,22 @@ export default defineConfig( {
 	retries: process.env.CI ? 1 : 0,
 	reporter: [
 		[ 'list' ],
-		[ 'html', { open: 'never', outputFolder: 'playwright-report' } ],
+		[ 'html', { open: 'never', outputFolder: path.join( __dirname, 'playwright-report' ) } ],
 	],
-	outputDir: 'test-results',
 	use: {
 		baseURL,
 		trace: 'retain-on-failure',
 		screenshot: 'only-on-failure',
+		actionTimeout: 30_000,
+		navigationTimeout: 30_000,
 	},
+	timeout: 60_000,
 	projects: [
 		{
-			name: 'setup',
-			testMatch: /auth\.setup\.js/,
-		},
-		{
-			name: 'desktop',
+			name: 'chromium',
 			use: {
 				...devices[ 'Desktop Chrome' ],
-				storageState: authFile,
 			},
-			dependencies: [ 'setup' ],
 		},
 	],
 	webServer: {

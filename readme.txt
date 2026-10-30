@@ -4,7 +4,7 @@ Tags: codemirror, editor, theme, customize, font
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.4
+Stable tag: 1.2.0
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -19,6 +19,7 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 * 40+ Themes - Choose from a wide selection of CodeMirror 5 themes including Monokai, Dracula, Material, Solarized, Nord, GitHub, and many more
 * Font Customization - Select from the Google Fonts library, adjust font weight, size, line height, and letter spacing
 * Display Options - Toggle line numbers, word wrap, ruler column, and current line highlighting
+* Per-User Preferences - Save personal editor settings; site defaults apply to users who have not customized their own
 * Live Preview - Real-time preview editor that updates instantly as you change settings
 * Internationalization - Translation-ready; translations are delivered through translate.wordpress.org
 
@@ -29,6 +30,11 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 3. Navigate to Settings > Editor Tweaks for CodeMirror to configure your preferences
 
 == Changelog ==
+
+= 1.2.0 =
+* Added per-user editor preferences with My Preferences and Site Defaults tabs
+* Users inherit site defaults until they save personal preferences
+* Added a Reset to Site Defaults action
 
 = 1.1.4 =
 * WordPress.org deployment now runs automatically when a v* tag is pushed
@@ -57,6 +63,9 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 * Live preview editor with real-time updates
 
 == Frequently Asked Questions ==
+
+= Do settings apply to every user? =
+Administrators can save their own preferences under My Preferences. Site Defaults apply to users who have not saved personal preferences, including new accounts. Use Reset to Site Defaults to inherit the site defaults again.
 
 = Does this plugin work with the Gutenberg code block? =
 No. The Gutenberg Code block is a RichText field, not a CodeMirror editor, so these settings do not apply to it. The plugin works with CodeMirror 5 editors such as the theme and plugin file editors and the Customizer's Additional CSS editor.

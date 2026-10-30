@@ -26,6 +26,63 @@ class Editor_Tweaks_For_CodeMirror_Editor {
 	}
 
 	/**
+	 * Built-in default settings.
+	 *
+	 * @return array Default settings.
+	 */
+	public static function get_defaults() {
+		return array(
+			'theme'                  => 'default',
+			'font_family'            => '',
+			'font_weight'            => '400',
+			'font_size'              => 14,
+			'line_height'            => '1.5',
+			'letter_spacing'         => 0,
+			'line_numbers'           => true,
+			'word_wrap'              => false,
+			'ruler_column'           => 0,
+			'current_line_highlight' => false,
+		);
+	}
+
+	/**
+	 * Site-wide settings, with built-in defaults filled in.
+	 *
+	 * @return array Site settings.
+	 */
+	public static function get_site_options() {
+		$options = get_option( 'editor_tweaks_for_codemirror_options', array() );
+
+		return wp_parse_args( is_array( $options ) ? $options : array(), self::get_defaults() );
+	}
+
+	/**
+	 * Settings saved by the current user, or an empty array if none are saved.
+	 *
+	 * @return array User settings.
+	 */
+	public static function get_user_options() {
+		$user_id = get_current_user_id();
+
+		if ( ! $user_id ) {
+			return array();
+		}
+
+		$options = get_user_meta( $user_id, 'editor_tweaks_for_codemirror_options', true );
+
+		return is_array( $options ) ? $options : array();
+	}
+
+	/**
+	 * Settings for the current user: their own preferences over the site defaults.
+	 *
+	 * @return array Resolved settings.
+	 */
+	public static function get_resolved_options() {
+		return wp_parse_args( self::get_user_options(), self::get_site_options() );
+	}
+
+	/**
 	 * Enqueue editor assets
 	 */
 	public function enqueue_editor_assets() {
@@ -36,7 +93,7 @@ class Editor_Tweaks_For_CodeMirror_Editor {
 			return;
 		}
 
-		$options = get_option( 'editor_tweaks_for_codemirror_options', array() );
+		$options = self::get_resolved_options();
 
 		/**
 		 * Enqueue CodeMirror 6 assets
@@ -59,8 +116,8 @@ class Editor_Tweaks_For_CodeMirror_Editor {
 		/**
 		 * Load font from Google Fonts if font family is set
 		 */
-		$font_family = isset( $options['font_family'] ) ? $options['font_family'] : '';
-		$font_weight = isset( $options['font_weight'] ) ? $options['font_weight'] : '400';
+		$font_family = $options['font_family'];
+		$font_weight = $options['font_weight'];
 		$font_url    = self::get_google_font_url( $font_family, $font_weight );
 		if ( $font_url ) {
 			// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Google Fonts URLs must not carry a ver query arg.
@@ -74,17 +131,17 @@ class Editor_Tweaks_For_CodeMirror_Editor {
 			'editor-tweaks-for-codemirror-editor',
 			'editorTweaksForCodeMirrorSettings',
 			array(
-				'theme'                => isset( $options['theme'] ) ? $options['theme'] : 'default',
+				'theme'                => $options['theme'],
 				'themeBaseUrl'         => EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/vendor/codemirror/theme/',
 				'fontFamily'           => $font_family,
-				'fontWeight'           => isset( $options['font_weight'] ) ? $options['font_weight'] : '400',
-				'fontSize'             => isset( $options['font_size'] ) ? $options['font_size'] : 14,
-				'lineHeight'           => isset( $options['line_height'] ) ? $options['line_height'] : '1.5',
-				'letterSpacing'        => isset( $options['letter_spacing'] ) ? floatval( $options['letter_spacing'] ) : 0,
-				'lineNumbers'          => isset( $options['line_numbers'] ) ? $options['line_numbers'] : true,
-				'wordWrap'             => isset( $options['word_wrap'] ) ? $options['word_wrap'] : false,
-				'rulerColumn'          => isset( $options['ruler_column'] ) ? $options['ruler_column'] : 0,
-				'currentLineHighlight' => isset( $options['current_line_highlight'] ) ? $options['current_line_highlight'] : false,
+				'fontWeight'           => $font_weight,
+				'fontSize'             => $options['font_size'],
+				'lineHeight'           => $options['line_height'],
+				'letterSpacing'        => floatval( $options['letter_spacing'] ),
+				'lineNumbers'          => $options['line_numbers'],
+				'wordWrap'             => $options['word_wrap'],
+				'rulerColumn'          => $options['ruler_column'],
+				'currentLineHighlight' => $options['current_line_highlight'],
 			)
 		);
 	}
@@ -170,23 +227,12 @@ class Editor_Tweaks_For_CodeMirror_Editor {
 	 * @return array Modified settings.
 	 */
 	public function modify_code_editor_settings( $settings ) {
-		$options = get_option( 'editor_tweaks_for_codemirror_options', array() );
+		$options = self::get_resolved_options();
 
-		if ( isset( $options['theme'] ) ) {
-			$settings['theme'] = $options['theme'];
-		}
-
-		if ( isset( $options['font_size'] ) ) {
-			$settings['fontSize'] = $options['font_size'];
-		}
-
-		if ( isset( $options['line_numbers'] ) ) {
-			$settings['lineNumbers'] = $options['line_numbers'];
-		}
-
-		if ( isset( $options['word_wrap'] ) ) {
-			$settings['wordWrap'] = $options['word_wrap'];
-		}
+		$settings['theme']       = $options['theme'];
+		$settings['fontSize']    = $options['font_size'];
+		$settings['lineNumbers'] = $options['line_numbers'];
+		$settings['wordWrap']    = $options['word_wrap'];
 
 		return $settings;
 	}

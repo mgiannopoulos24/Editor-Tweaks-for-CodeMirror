@@ -24,8 +24,8 @@ class Example_Class {
      * Initialize the class
      */
     private function init() {
-        if (isset($_GET['action'])) {
-            $action = sanitize_text_field($_GET['action']);
+        if (isset($_GET['action'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Sample preview code; never executed.
+            $action = sanitize_text_field(wp_unslash($_GET['action'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Sample preview code; never executed.
             $this->handle_action($action);
         }
     }

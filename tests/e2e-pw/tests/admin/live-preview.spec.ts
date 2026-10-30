@@ -1,10 +1,11 @@
-import { test, expect } from '@playwright/test';
-import { gotoSettings, chooseSelect2, resetOptions } from './helpers';
+import { test, expect } from '../../utils/fixtures';
+import { gotoSettings, chooseSelect2, resetOptions } from '../../utils/helpers';
 
 test.describe( 'Live preview', () => {
 	test.beforeAll( () => resetOptions() );
 
-	test( 'theme, font size and line numbers update the preview without saving', async ( { page } ) => {
+	test( 'theme, font size and line numbers update the preview without saving', async ( { adminContext } ) => {
+		const page = await adminContext.newPage();
 		const s = await gotoSettings( page );
 
 		await chooseSelect2( page, 'etcm_theme', 'Dracula' );
@@ -18,7 +19,8 @@ test.describe( 'Live preview', () => {
 		await expect( s.preview.locator( '.CodeMirror-linenumber' ) ).toHaveCount( 0 );
 	} );
 
-	test( 'file type switches the sample and its mode', async ( { page } ) => {
+	test( 'file type switches the sample and its mode', async ( { adminContext } ) => {
+		const page = await adminContext.newPage();
 		const s = await gotoSettings( page );
 
 		await s.previewFileType.selectOption( 'css' );
