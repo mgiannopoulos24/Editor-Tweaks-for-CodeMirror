@@ -21,6 +21,7 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
   - Enable/disable word wrap
   - Set ruler column for line length guidelines
   - Highlight current line with subtle background color
+- **Per-User Preferences**: Each administrator can save personal editor settings, while site defaults apply to anyone who has not customized their own
 - **Internationalization (i18n)**: Translation-ready; translations are delivered through translate.wordpress.org language packs and load just in time from `wp-content/languages/plugins`
 - **Live Preview**: Real-time preview editor that updates instantly as you change settings
 - **Sample Code Preview**: Test your settings with sample JavaScript, PHP, CSS, HTML, and JSON files
@@ -98,7 +99,8 @@ This will start a WordPress instance at `http://localhost:8888`
 ## Usage
 
 1. Navigate to **Settings → Editor Tweaks for CodeMirror** in your WordPress admin
-2. Configure your preferences:
+2. Choose **My Preferences** to customize only your account, or **Site Defaults** to configure what users inherit
+3. Configure your preferences:
    - **Theme**: Select from 40+ available CodeMirror 5 themes (preview updates instantly)
    - **Font Family**: Search and select any Google Fonts family
    - **Font Weight**: Choose font weight (100-900)
@@ -109,14 +111,16 @@ This will start a WordPress instance at `http://localhost:8888`
    - **Word Wrap**: Enable or disable word wrapping
    - **Ruler Column**: Set a column guide for line length (0 to disable)
    - **Highlight Current Line**: Enable highlighting of the line where the cursor is located
-3. Use the **Live Preview** section to see your changes in real-time
-4. Test different file types (JavaScript, PHP, CSS, HTML, JSON) in the preview
-5. Click **Save Settings** to apply your customizations
-6. Your settings will automatically apply to all CodeMirror editors in WordPress, including:
+4. Use the **Live Preview** section to see your changes in real-time
+5. Test different file types (JavaScript, PHP, CSS, HTML, JSON) in the preview
+6. Click **Save Preferences** or **Save Site Defaults** to apply your changes
+7. Your settings will automatically apply to all CodeMirror editors in WordPress, including:
    - Theme editor
    - Plugin editor
    - Customizer code editor
    - Any other CodeMirror 5 instance where the plugin is loaded
+
+Users inherit the site defaults until they save their own preferences. Use **Reset to Site Defaults** to remove your personal preferences and inherit them again.
 
 **Note:** The Gutenberg Code block and Custom HTML block are not CodeMirror editors, so these settings do not apply to them.
 

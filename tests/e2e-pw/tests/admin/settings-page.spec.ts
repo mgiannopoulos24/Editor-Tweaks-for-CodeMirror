@@ -1,10 +1,11 @@
-import { test, expect } from '@playwright/test';
-import { gotoSettings, resetOptions } from './helpers';
+import { test, expect } from '../../utils/fixtures';
+import { gotoSettings, resetOptions } from '../../utils/helpers';
 
 test.describe( 'Settings page', () => {
 	test.beforeAll( () => resetOptions() );
 
-	test( 'renders the form and a live preview with defaults', async ( { page } ) => {
+	test( 'renders the form and a live preview with defaults', async ( { adminContext } ) => {
+		const page = await adminContext.newPage();
 		const s = await gotoSettings( page );
 
 		// Three sections (theme, font, display), each a settings table. Headings
@@ -27,7 +28,8 @@ test.describe( 'Settings page', () => {
 		await expect( s.preview.locator( '.CodeMirror-code' ) ).toContainText( 'function' );
 	} );
 
-	test( 'help icons carry their tooltip text', async ( { page } ) => {
+	test( 'help icons carry their tooltip text', async ( { adminContext } ) => {
+		const page = await adminContext.newPage();
 		await gotoSettings( page );
 		const tips = page.locator( '.editor-tweaks-for-codemirror-tip' );
 		await expect( tips ).toHaveCount( 7 );
@@ -36,6 +38,9 @@ test.describe( 'Settings page', () => {
 		for ( const tip of await tips.all() ) {
 			const text = await tip.getAttribute( 'data-tip' );
 			expect( text ).toBeTruthy();
+			if ( ! text ) {
+				throw new Error( 'Tooltip is missing its data-tip attribute.' );
+			}
 			await expect( tip ).toHaveAttribute( 'aria-label', text );
 		}
 	} );

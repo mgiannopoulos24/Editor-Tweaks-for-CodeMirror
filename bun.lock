@@ -6,6 +6,7 @@
       "name": "codemirror-forge",
       "devDependencies": {
         "@playwright/test": "^1.64.0",
+        "@types/node": "^26.6.5",
         "@wordpress/env": "^11.17.0",
         "bestzip": "^4.0.3",
       },

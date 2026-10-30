@@ -1,12 +1,9 @@
-import { execSync } from 'node:child_process';
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { ADMIN_USER } from './users';
+import { wpCliArgs } from './wp-cli';
 
-/** wp-env's default admin account. */
-export const credentials = {
-	username: process.env.WP_USERNAME ?? 'admin',
-	password: process.env.WP_PASSWORD ?? 'password',
-};
+export { ADMIN_USER };
 
 export const routes = {
 	settings: '/wp-admin/options-general.php?page=editor-tweaks-for-codemirror',
@@ -15,9 +12,19 @@ export const routes = {
 
 export const OPTION_NAME = 'editor_tweaks_for_codemirror_options';
 
-/** Delete the saved options so every spec starts from the defaults. */
-export function resetOptions() {
-	execSync( `bunx wp-env run cli wp option delete ${ OPTION_NAME }`, { stdio: 'ignore' } );
+/** Delete the saved site and user options so every spec starts from the defaults. */
+export function resetOptions(): void {
+	try {
+		wpCliArgs( [ 'option', 'delete', OPTION_NAME ] );
+	} catch {
+		// The option does not exist yet.
+	}
+
+	try {
+		wpCliArgs( [ 'user', 'meta', 'delete', ADMIN_USER.user, OPTION_NAME ] );
+	} catch {
+		// The user has not saved preferences yet.
+	}
 }
 
 /** Open the settings page and wait for the preview editor to initialise. */

@@ -289,7 +289,7 @@
                 mutation.addedNodes.forEach(function(node) {
                     if (node.nodeType === 1) { // Element node
                         const cmElements = node.querySelectorAll ? 
-                            node.querySelectorAll('.CodeMirror, .CodeMirror-wrap') : [];
+                            Array.from(node.querySelectorAll('.CodeMirror, .CodeMirror-wrap')) : [];
                         
                         if (node.classList && node.classList.contains('CodeMirror')) {
                             cmElements.push(node);

@@ -22,7 +22,85 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_post_editor_tweaks_for_codemirror_save_user_preferences', array( $this, 'save_user_preferences' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+	}
+
+	/**
+	 * Get the current settings scope.
+	 *
+	 * @return string Either 'user' (personal preferences) or 'site' (site defaults).
+	 */
+	public function get_scope() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display choice.
+		$scope = isset( $_GET['scope'] ) ? sanitize_key( wp_unslash( $_GET['scope'] ) ) : 'user';
+
+		return 'site' === $scope ? 'site' : 'user';
+	}
+
+	/**
+	 * Get the settings shown for the current scope.
+	 *
+	 * @return array Settings for the scope.
+	 */
+	private function get_scope_options() {
+		if ( 'site' === $this->get_scope() ) {
+			return Editor_Tweaks_For_CodeMirror_Editor::get_site_options();
+		}
+
+		return Editor_Tweaks_For_CodeMirror_Editor::get_resolved_options();
+	}
+
+	/**
+	 * Save the current user's editor preferences.
+	 */
+	public function save_user_preferences() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die(
+				esc_html__( 'You do not have sufficient permissions to access this page.', 'editor-tweaks-for-codemirror' ),
+				'',
+				array( 'response' => 403 )
+			);
+		}
+
+		check_admin_referer( 'editor_tweaks_for_codemirror_user_preferences' );
+
+		if ( ! empty( $_POST['editor_tweaks_for_codemirror_reset_preferences'] ) ) {
+			delete_user_meta( get_current_user_id(), 'editor_tweaks_for_codemirror_options' );
+
+			wp_safe_redirect(
+				add_query_arg(
+					array(
+						'page'           => 'editor-tweaks-for-codemirror',
+						'scope'          => 'user',
+						'settings-reset' => 'true',
+					),
+					admin_url( 'options-general.php' )
+				)
+			);
+			exit;
+		}
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by sanitize_settings().
+		$input = isset( $_POST['editor_tweaks_for_codemirror_options'] ) ? wp_unslash( $_POST['editor_tweaks_for_codemirror_options'] ) : array();
+
+		update_user_meta(
+			get_current_user_id(),
+			'editor_tweaks_for_codemirror_options',
+			$this->sanitize_settings( is_array( $input ) ? $input : array() )
+		);
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'             => 'editor-tweaks-for-codemirror',
+					'scope'            => 'user',
+					'settings-updated' => 'true',
+				),
+				admin_url( 'options-general.php' )
+			)
+		);
+		exit;
 	}
 
 	/**
@@ -264,6 +342,28 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'editor-tweaks-for-codemirror' ) );
 		}
 
+		$scope = $this->get_scope();
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag set after a verified save or reset.
+		if ( 'user' === $scope && isset( $_GET['settings-updated'] ) && 'true' === $_GET['settings-updated'] ) {
+			add_settings_error(
+				'editor_tweaks_for_codemirror_options',
+				'settings_updated',
+				__( 'Preferences saved.', 'editor-tweaks-for-codemirror' ),
+				'success'
+			);
+			settings_errors( 'editor_tweaks_for_codemirror_options' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag set after a verified reset.
+		} elseif ( 'user' === $scope && isset( $_GET['settings-reset'] ) && 'true' === $_GET['settings-reset'] ) {
+			add_settings_error(
+				'editor_tweaks_for_codemirror_options',
+				'settings_reset',
+				__( 'Preferences reset to site defaults.', 'editor-tweaks-for-codemirror' ),
+				'success'
+			);
+			settings_errors( 'editor_tweaks_for_codemirror_options' );
+		}
+
 		include EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_DIR . 'views/admin-settings.php';
 	}
 
@@ -339,8 +439,8 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render theme field
 	 */
 	public function render_theme_field() {
-		$options = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$theme   = isset( $options['theme'] ) ? $options['theme'] : 'default';
+		$options = $this->get_scope_options();
+		$theme   = $options['theme'];
 		$themes  = self::get_themes();
 		?>
 		<select name="editor_tweaks_for_codemirror_options[theme]" id="etcm_theme">
@@ -364,8 +464,8 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render font family field
 	 */
 	public function render_font_family_field() {
-		$options     = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$font_family = isset( $options['font_family'] ) ? $options['font_family'] : '';
+		$options     = $this->get_scope_options();
+		$font_family = $options['font_family'];
 		?>
 		<select name="editor_tweaks_for_codemirror_options[font_family]" id="etcm_font_family" class="editor-tweaks-for-codemirror-font-select" style="min-width: 300px;">
 			<option value=""><?php esc_html_e( 'Default (inherit)', 'editor-tweaks-for-codemirror' ); ?></option>
@@ -381,8 +481,8 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render font weight field
 	 */
 	public function render_font_weight_field() {
-		$options     = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$font_weight = isset( $options['font_weight'] ) ? $options['font_weight'] : '400';
+		$options     = $this->get_scope_options();
+		$font_weight = $options['font_weight'];
 		$weights     = array(
 			'100' => __( 'Thin (100)', 'editor-tweaks-for-codemirror' ),
 			'200' => __( 'Extra Light (200)', 'editor-tweaks-for-codemirror' ),
@@ -410,8 +510,8 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render font size field
 	 */
 	public function render_font_size_field() {
-		$options   = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$font_size = isset( $options['font_size'] ) ? $options['font_size'] : 14;
+		$options   = $this->get_scope_options();
+		$font_size = $options['font_size'];
 		?>
 		<input type="number" name="editor_tweaks_for_codemirror_options[font_size]" id="etcm_font_size" 
 				value="<?php echo esc_attr( $font_size ); ?>" min="10" step="1">
@@ -423,8 +523,8 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render line height field
 	 */
 	public function render_line_height_field() {
-		$options     = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$line_height = isset( $options['line_height'] ) ? $options['line_height'] : '1.5';
+		$options     = $this->get_scope_options();
+		$line_height = $options['line_height'];
 		?>
 		<input type="text" name="editor_tweaks_for_codemirror_options[line_height]" id="etcm_line_height" 
 				value="<?php echo esc_attr( $line_height ); ?>" placeholder="1.5 or 1.5em or 24px">
@@ -436,8 +536,8 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render letter spacing field
 	 */
 	public function render_letter_spacing_field() {
-		$options        = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$letter_spacing = isset( $options['letter_spacing'] ) ? $options['letter_spacing'] : 0;
+		$options        = $this->get_scope_options();
+		$letter_spacing = $options['letter_spacing'];
 		?>
 		<input type="number" name="editor_tweaks_for_codemirror_options[letter_spacing]" id="etcm_letter_spacing" 
 				value="<?php echo esc_attr( $letter_spacing ); ?>" step="0.1" min="-5" max="10">
@@ -456,9 +556,10 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render line numbers field
 	 */
 	public function render_line_numbers_field() {
-		$options      = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$line_numbers = isset( $options['line_numbers'] ) ? $options['line_numbers'] : true;
+		$options      = $this->get_scope_options();
+		$line_numbers = $options['line_numbers'];
 		?>
+		<input type="hidden" name="editor_tweaks_for_codemirror_options[line_numbers]" value="0">
 		<input type="checkbox" name="editor_tweaks_for_codemirror_options[line_numbers]" id="etcm_line_numbers" 
 				value="1" <?php checked( $line_numbers, true ); ?>>
 		<label for="etcm_line_numbers"><?php esc_html_e( 'Enable line numbers', 'editor-tweaks-for-codemirror' ); ?></label>
@@ -469,9 +570,10 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render word wrap field
 	 */
 	public function render_word_wrap_field() {
-		$options   = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$word_wrap = isset( $options['word_wrap'] ) ? $options['word_wrap'] : false;
+		$options   = $this->get_scope_options();
+		$word_wrap = $options['word_wrap'];
 		?>
+		<input type="hidden" name="editor_tweaks_for_codemirror_options[word_wrap]" value="0">
 		<input type="checkbox" name="editor_tweaks_for_codemirror_options[word_wrap]" id="etcm_word_wrap" 
 				value="1" <?php checked( $word_wrap, true ); ?>>
 		<label for="etcm_word_wrap"><?php esc_html_e( 'Enable word wrap', 'editor-tweaks-for-codemirror' ); ?></label>
@@ -482,8 +584,8 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render ruler column field
 	 */
 	public function render_ruler_column_field() {
-		$options      = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$ruler_column = isset( $options['ruler_column'] ) ? $options['ruler_column'] : 0;
+		$options      = $this->get_scope_options();
+		$ruler_column = $options['ruler_column'];
 		?>
 		<input type="number" name="editor_tweaks_for_codemirror_options[ruler_column]" id="etcm_ruler_column" 
 				value="<?php echo esc_attr( $ruler_column ); ?>" min="0" max="200" step="1">
@@ -495,9 +597,10 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 	 * Render current line highlight field
 	 */
 	public function render_current_line_highlight_field() {
-		$options                = get_option( 'editor_tweaks_for_codemirror_options', array() );
-		$current_line_highlight = isset( $options['current_line_highlight'] ) ? $options['current_line_highlight'] : false;
+		$options                = $this->get_scope_options();
+		$current_line_highlight = $options['current_line_highlight'];
 		?>
+		<input type="hidden" name="editor_tweaks_for_codemirror_options[current_line_highlight]" value="0">
 		<input type="checkbox" name="editor_tweaks_for_codemirror_options[current_line_highlight]" id="etcm_current_line_highlight" 
 				value="1" <?php checked( $current_line_highlight, true ); ?>>
 		<label for="etcm_current_line_highlight"><?php esc_html_e( 'Enable current line highlighting.', 'editor-tweaks-for-codemirror' ); ?></label>
@@ -540,7 +643,7 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 		wp_enqueue_style(
 			'editor-tweaks-for-codemirror-admin',
 			EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/css/admin.css',
-			array( 'select2' ),
+			array( 'select2', 'dashicons' ),
 			EDITOR_TWEAKS_FOR_CODEMIRROR_VERSION
 		);
 
@@ -578,7 +681,7 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 		 */
 		wp_enqueue_code_editor( array( 'type' => 'text/javascript' ) );
 
-		$options = get_option( 'editor_tweaks_for_codemirror_options', array() );
+		$options = $this->get_scope_options();
 
 		wp_enqueue_script(
 			'editor-tweaks-for-codemirror-admin',
@@ -609,15 +712,15 @@ class Editor_Tweaks_For_CodeMirror_Admin {
 			'editor-tweaks-for-codemirror-admin',
 			'editorTweaksForCodeMirrorAdminSettings',
 			array(
-				'theme'                => isset( $options['theme'] ) ? $options['theme'] : 'default',
-				'fontFamily'           => isset( $options['font_family'] ) ? $options['font_family'] : '',
-				'fontWeight'           => isset( $options['font_weight'] ) ? $options['font_weight'] : '400',
-				'fontSize'             => isset( $options['font_size'] ) ? $options['font_size'] : 14,
-				'lineHeight'           => isset( $options['line_height'] ) ? $options['line_height'] : '1.5',
-				'lineNumbers'          => isset( $options['line_numbers'] ) ? $options['line_numbers'] : true,
-				'wordWrap'             => isset( $options['word_wrap'] ) ? $options['word_wrap'] : false,
-				'rulerColumn'          => isset( $options['ruler_column'] ) ? $options['ruler_column'] : 0,
-				'currentLineHighlight' => isset( $options['current_line_highlight'] ) ? $options['current_line_highlight'] : false,
+				'theme'                => $options['theme'],
+				'fontFamily'           => $options['font_family'],
+				'fontWeight'           => $options['font_weight'],
+				'fontSize'             => $options['font_size'],
+				'lineHeight'           => $options['line_height'],
+				'lineNumbers'          => $options['line_numbers'],
+				'wordWrap'             => $options['word_wrap'],
+				'rulerColumn'          => $options['ruler_column'],
+				'currentLineHighlight' => $options['current_line_highlight'],
 				'pluginUrl'            => EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL,
 				'themeBaseUrl'         => EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/vendor/codemirror/theme/',
 				'googleFontsUrl'       => EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL . 'assets/data/google-fonts.json?ver=' . EDITOR_TWEAKS_FOR_CODEMIRROR_VERSION,

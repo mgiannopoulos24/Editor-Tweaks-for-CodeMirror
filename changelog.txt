@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 1.2.0 =
+* Added per-user editor preferences with My Preferences and Site Defaults tabs
+* Users inherit site defaults until they save personal preferences
+* Added a Reset to Site Defaults action
+
 = 1.1.4 =
 * WordPress.org deployment now runs automatically when a v* tag is pushed
 * Corrected the FAQ and README to clarify that the Gutenberg Code block is not a CodeMirror editor and is not affected by the plugin

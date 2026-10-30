@@ -12,3 +12,4 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 delete_option( 'editor_tweaks_for_codemirror_options' );
+delete_metadata( 'user', 0, 'editor_tweaks_for_codemirror_options', '', true );

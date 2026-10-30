@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-10-30
+
+### Added
+- Per-user editor preferences, with **My Preferences** and **Site Defaults** tabs
+- A **Reset to Site Defaults** action that removes personal preferences
+- Site defaults are inherited by users who have not saved preferences of their own
+
+### Changed
+- Saving on the **My Preferences** tab now updates only the current user; **Site Defaults** updates the site-wide settings
+
 ## [1.1.4] - 2026-10-27
 
 ### Changed

@@ -1,6 +1,6 @@
 {
   "name": "editor-tweaks-for-codemirror",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "Tweak every CodeMirror editor in WordPress with custom themes, fonts, and display options",
   "author": "Marios Giannopoulos",
   "license": "GPL-3.0-or-later",
@@ -17,8 +17,8 @@
     "lint": "./vendor/bin/phpcs --standard=phpcs.xml --extensions=php .",
     "lint:fix": "./vendor/bin/phpcbf --standard=phpcs.xml --extensions=php .",
     "test:e2e:install": "bunx playwright install chromium",
-    "test:e2e": "bunx playwright test --config tests/e2e-pw/playwright.config.ts",
-    "test:e2e:report": "bunx playwright show-report tests/e2e-pw/playwright-report",
+    "test:e2e": "playwright test --config tests/e2e-pw/playwright.config.ts",
+    "test:e2e:report": "playwright show-report tests/e2e-pw/playwright-report",
     "i18n:make-pot": "wp-env run cli -- wp i18n make-pot wp-content/plugins/editor-tweaks-for-codemirror wp-content/plugins/editor-tweaks-for-codemirror/languages/editor-tweaks-for-codemirror.pot --slug=editor-tweaks-for-codemirror --domain=editor-tweaks-for-codemirror --exclude=node_modules,vendor,.git,languages,tests",
     "i18n": "bun run i18n:make-pot",
     "fonts:update": "bun scripts/update-google-fonts.js",
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5",
     "@wordpress/env": "^11.17.0",
     "bestzip": "^4.0.3"
   }

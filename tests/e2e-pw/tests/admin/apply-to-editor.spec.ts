@@ -1,11 +1,12 @@
-import { test, expect } from '@playwright/test';
-import { gotoSettings, chooseSelect2, resetOptions, routes } from './helpers';
+import { test, expect } from '../../utils/fixtures';
+import { gotoSettings, chooseSelect2, resetOptions, routes } from '../../utils/helpers';
 
 test.describe( 'Saved settings reach the Theme File Editor', () => {
 	test.beforeAll( () => resetOptions() );
 	test.afterAll( () => resetOptions() );
 
-	test( 'theme and font size are applied to theme-editor.php', async ( { page } ) => {
+	test( 'theme and font size are applied to theme-editor.php', async ( { adminContext } ) => {
+		const page = await adminContext.newPage();
 		const s = await gotoSettings( page );
 
 		await chooseSelect2( page, 'etcm_theme', 'Dracula' );
