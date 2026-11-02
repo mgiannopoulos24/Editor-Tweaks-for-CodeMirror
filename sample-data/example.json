@@ -1,32 +1,20 @@
 {
-  "name": "editor-tweaks-for-codemirror",
-  "version": "1.0.0",
-  "description": "A WordPress plugin for customizing CodeMirror editor",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mgiannopoulos24/editor-tweaks-for-codemirror"
+  "id": 1042,
+  "title": "Weekend trip to the coast",
+  "published": true,
+  "rating": 4.7,
+  "author": {
+    "name": "Alex Doe",
+    "email": "alex@example.com"
   },
-  "author": "Marios Giannopoulos",
-  "license": "GPL-3",
-  "features": [
-    "Theme selection",
-    "Font customization",
-    "Font weight control",
-    "Line numbers toggle",
-    "Word wrap option",
-    "Ruler column guide"
+  "tags": ["travel", "beach", "summer"],
+  "stops": [
+    { "name": "Harbor market", "duration": 90, "booked": false },
+    { "name": "Lighthouse walk", "duration": 45, "booked": true }
   ],
-  "supportedThemes": [
-    "default",
-    "dark",
-    "one-dark",
-    "dracula",
-    "material",
-    "solarized",
-    "nord",
-    "github-light",
-    "github-dark",
-    "tokyo-night"
-  ]
+  "budget": {
+    "currency": "EUR",
+    "total": 350.5,
+    "notes": null
+  }
 }
-

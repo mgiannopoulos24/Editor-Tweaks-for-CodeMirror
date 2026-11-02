@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-11-02
+
+### Added
+- Greek (`el`) translation, delivered through translate.wordpress.org language packs
+
+### Changed
+- Preview sample files (PHP, JS, CSS, HTML, JSON) are now generic examples instead of plugin-specific code
+- "Requires at least" lowered from WordPress 6.5 to 5.9 and "Requires PHP" from 8.1 to 7.4 (WordPress 5.8 is unsupported: `wp_json_file_decode()` was added in 5.9)
+
 ## [1.2.0] - 2026-10-30
 
 ### Added

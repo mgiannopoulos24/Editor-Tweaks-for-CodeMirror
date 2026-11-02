@@ -2,10 +2,10 @@
 /**
  * Plugin Name: Editor Tweaks for CodeMirror
  * Description: Tweak every CodeMirror editor in WordPress with custom themes, fonts, and display options.
- * Version: 1.2.0
- * Requires at least: 6.5
+ * Version: 1.2.1
+ * Requires at least: 5.9
  * Tested up to:      7.1
- * Requires PHP:      8.1
+ * Requires PHP:      7.4
  * Author: Marios Giannopoulos
  * Author URI: https://github.com/mgiannopoulos24
  * License: GNU General Public License v3 or later
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Define plugin constants
  */
-define( 'EDITOR_TWEAKS_FOR_CODEMIRROR_VERSION', '1.2.0' );
+define( 'EDITOR_TWEAKS_FOR_CODEMIRROR_VERSION', '1.2.1' );
 define( 'EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'EDITOR_TWEAKS_FOR_CODEMIRROR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

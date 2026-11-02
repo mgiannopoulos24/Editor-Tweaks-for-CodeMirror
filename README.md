@@ -163,8 +163,8 @@ editor-tweaks-for-codemirror/
 
 ## Requirements
 
-- WordPress 5.0 or higher
-- PHP 8.3 or higher (for development)
+- WordPress 5.9 or higher
+- PHP 7.4 or higher (the wp-env development environment uses PHP 8.3)
 - Bun (for development)
 
 ## Development

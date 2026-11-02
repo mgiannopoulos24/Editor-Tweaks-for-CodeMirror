@@ -1,70 +1,76 @@
 <?php
 /**
- * Sample PHP file for Editor Tweaks for CodeMirror preview
- * 
- * @package Editor_Tweaks_For_CodeMirror
+ * Sample PHP file for the editor preview.
  */
 
-namespace Editor_Tweaks_For_CodeMirror;
+namespace Shop;
 
-class Example_Class {
-    
-    private $property = 'value';
-    protected $array = [1, 2, 3];
-    public static $static_prop = 'static';
-    
-    /**
-     * Constructor
-     */
-    public function __construct() {
-        $this->init();
-    }
-    
-    /**
-     * Initialize the class
-     */
-    private function init() {
-        if (isset($_GET['action'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Sample preview code; never executed.
-            $action = sanitize_text_field(wp_unslash($_GET['action'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Sample preview code; never executed.
-            $this->handle_action($action);
-        }
-    }
-    
-    /**
-     * Handle action
-     * 
-     * @param string $action Action to handle
-     * @return bool
-     */
-    private function handle_action($action) {
-        switch ($action) {
-            case 'save':
-                return $this->save_data();
-            case 'delete':
-                return $this->delete_data();
-            default:
-                return false;
-        }
-    }
-    
-    /**
-     * Save data
-     */
-    private function save_data() {
-        $data = [
-            'name' => 'Editor Tweaks for CodeMirror',
-            'version' => '1.0.0',
-            'active' => true
-        ];
-        
-        return update_option('editor_tweaks_for_codemirror_data', $data);
-    }
-    
-    /**
-     * Delete data
-     */
-    private function delete_data() {
-        return delete_option('editor_tweaks_for_codemirror_data');
-    }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
+interface Discountable {
+	public function apply_discount( $percent );
+}
+
+class Product implements Discountable {
+
+	const CURRENCY = 'EUR';
+
+	private static $count = 0;
+
+	private $name;
+	private $price;
+	private $tags;
+
+	public function __construct( $name, $price, array $tags = [] ) {
+		$this->name  = $name;
+		$this->price = $price;
+		$this->tags  = $tags;
+		self::$count++;
+	}
+
+	public function apply_discount( $percent ) {
+		if ( $percent <= 0 || $percent > 100 ) {
+			throw new \InvalidArgumentException( 'Discount must be between 0 and 100.' );
+		}
+
+		$this->price = round( $this->price * ( 1 - $percent / 100 ), 2 );
+	}
+
+	public function label() {
+		return sprintf( '%s — %.2f %s', $this->name, $this->price, self::CURRENCY );
+	}
+
+	public function has_tag( $tag ) {
+		return in_array( strtolower( $tag ), $this->tags, true );
+	}
+
+	public static function count() {
+		return self::$count;
+	}
+}
+
+function discounted_labels( array $products, $tag, $percent ) {
+	$labels = [];
+
+	foreach ( $products as $product ) {
+		if ( $product->has_tag( $tag ) ) {
+			$product->apply_discount( $percent );
+		}
+
+		$labels[] = $product->label();
+	}
+
+	return $labels;
+}
+
+discounted_labels(
+	[
+		new Product( 'Notebook', 4.50, [ 'paper', 'school' ] ),
+		new Product( 'Fountain pen', 24.00, [ 'writing' ] ),
+		new Product( 'Desk lamp', 39.90 ),
+	],
+	'school',
+	10
+);

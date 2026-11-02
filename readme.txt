@@ -1,10 +1,10 @@
 === Editor Tweaks for CodeMirror ===
 Contributors: mgiannopoulos24
 Tags: codemirror, editor, theme, customize, font
-Requires at least: 6.5
+Requires at least: 5.9
 Tested up to: 7.1
-Requires PHP: 8.1
-Stable tag: 1.2.0
+Requires PHP: 7.4
+Stable tag: 1.2.1
 License: GPL v3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,6 +30,11 @@ Editor Tweaks for CodeMirror provides powerful customization options for WordPre
 3. Navigate to Settings > Editor Tweaks for CodeMirror to configure your preferences
 
 == Changelog ==
+
+= 1.2.1 =
+* Added Greek (el) translation
+* Preview sample files (PHP, JS, CSS, HTML, JSON) are now generic examples instead of plugin-specific code
+* "Requires at least" lowered to WordPress 5.9 and "Requires PHP" to 7.4
 
 = 1.2.0 =
 * Added per-user editor preferences with My Preferences and Site Defaults tabs

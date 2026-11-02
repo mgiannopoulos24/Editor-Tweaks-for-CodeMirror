@@ -16,7 +16,7 @@ test.describe( 'Live preview', () => {
 		await expect( s.preview ).toHaveCSS( 'font-size', '18px' );
 
 		await s.lineNumbers.uncheck();
-		await expect( s.preview.locator( '.CodeMirror-linenumber' ) ).toHaveCount( 0 );
+		await expect( s.preview.locator( '.CodeMirror-code .CodeMirror-linenumber' ) ).toHaveCount( 0 );
 	} );
 
 	test( 'file type switches the sample and its mode', async ( { adminContext } ) => {

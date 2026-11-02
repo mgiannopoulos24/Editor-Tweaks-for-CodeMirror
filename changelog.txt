@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 1.2.1 =
+* Added Greek (el) translation
+* Preview sample files (PHP, JS, CSS, HTML, JSON) are now generic examples instead of plugin-specific code
+* "Requires at least" lowered to WordPress 5.9 and "Requires PHP" to 7.4
+
 = 1.2.0 =
 * Added per-user editor preferences with My Preferences and Site Defaults tabs
 * Users inherit site defaults until they save personal preferences
